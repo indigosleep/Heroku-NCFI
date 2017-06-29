@@ -5,3 +5,19 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+ORDER_COUNT = 5
+
+if Rails.env == "development"
+  puts "Reset Database"
+  Rake::Task['db:migrate:reset'].invoke
+end
+
+puts "Createing Orders"
+ORDER_COUNT.times do
+  Order.create(
+
+  )
+end
+
+p Order.all
