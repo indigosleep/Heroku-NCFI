@@ -6,14 +6,29 @@ class OrdersController < ApplicationController
   end
 
   def create
-    @order = Order.new(orderParams)
-    puts("!!!!!!!!!!!!!!!!")
-    p @order
+    # id = params[:id]
+    # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
+    # p id
+    # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
 
-    if @order.save
-      format.json { render json: @order.to_json, status: 201 }
+    if existingOrder = Order.find_by_id(params[:id])
+
+      if existingOrder.update(orderParams)
+        format.json { render json: existingOrder.to_json, status: 201 }
+        puts ("UPDATED!!!!!!!!!!!!!!!!!")
+      else
+        format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
+      end
+
     else
-      format.json { render json: @order.errors.full_messages.to_json, status: 422 }
+
+      @order = Order.new(orderParams)
+      if @order.save
+        format.json { render json: @order.to_json, status: 201 }
+      else
+        format.json { render json: @order.errors.full_messages.to_json, status: 422 }
+      end
+
     end
   end
 
