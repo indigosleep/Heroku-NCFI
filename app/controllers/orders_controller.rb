@@ -1,36 +1,54 @@
+require 'shopify_api'
+API_KEY = "e1c86625102fe6d8f9b157ef0cc41965"
+PASSWORD = "0fcef94cc5e4cfde2d4a097e992a9cfe"
+SHOP_NAME = "indigo-sleep"
+
+shop_url = "https://#{API_KEY}:#{PASSWORD}@#{SHOP_NAME}.myshopify.com/admin"
+ShopifyAPI::Base.site = shop_url
+
+shop = ShopifyAPI::Shop.current
+
+
 class OrdersController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-
   end
 
   def create
-    # id = params[:id]
-    # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
-    # p id
-    # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
+    @order = ShopifyAPI::Order.find(params[:id])
+    puts "!!!!!!!!!!!!!!!!SHIPPING ADDRESS IS!!!!!!!!!!!!!"
+    p @order.shipping_address
+    puts "!!!!!!!!!!!!!!!!SHIPPING ADDRESS!!!!!!!!!!!!!"
 
-    if existingOrder = Order.find_by_id(params[:id])
-
-      if existingOrder.update(orderParams)
-        format.json { render json: existingOrder.to_json, status: 201 }
-        puts ("UPDATED!!!!!!!!!!!!!!!!!")
-      else
-        format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
-      end
-
-    else
-
-      @order = Order.new(orderParams)
-      if @order.save
-        format.json { render json: @order.to_json, status: 201 }
-      else
-        format.json { render json: @order.errors.full_messages.to_json, status: 422 }
-      end
-
-    end
   end
+
+  # def create
+  #   # id = params[:id]
+  #   # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
+  #   # p id
+  #   # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
+  #
+  #   if existingOrder = Order.find_by_id(params[:id])
+  #
+  #     if existingOrder.update(orderParams)
+  #       format.json { render json: existingOrder.to_json, status: 201 }
+  #       puts ("UPDATED!!!!!!!!!!!!!!!!!")
+  #     else
+  #       format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
+  #     end
+  #
+  #   else
+  #
+  #     @order = Order.new(orderParams)
+  #     if @order.save
+  #       format.json { render json: @order.to_json, status: 201 }
+  #     else
+  #       format.json { render json: @order.errors.full_messages.to_json, status: 422 }
+  #     end
+  #
+  #   end
+  # end
 
 
   private
