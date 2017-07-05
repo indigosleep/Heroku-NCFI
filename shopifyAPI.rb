@@ -10,8 +10,11 @@ shop = ShopifyAPI::Shop.current
 
 # p ShopifyAPI::Order.first.line_items.first.fulfillment_status
 
-lastID = ShopifyAPI::Order.last.id
+p ShopifyAPI::Order.last.line_items#.shipping_lines
 #
 # p ShopifyAPI::Order.last.fulfillments << ShopifyAPI::Fulfillment.new(status: "open", order_id: lastID).save
 
-p ShopifyAPI::Order.last.fulfillments
+# p ShopifyAPI::Order.last.fulfillments
+
+
+# p ShopifyAPI::Order.find(5222827460)

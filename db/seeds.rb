@@ -13,11 +13,11 @@ if Rails.env == "development"
   Rake::Task['db:migrate:reset'].invoke
 end
 
-puts "Createing Orders"
-ORDER_COUNT.times do
-  Order.create(
+# puts "Createing Orders"
+# ORDER_COUNT.times do
+#   Order.create(
+#
+#   )
+# end
 
-  )
-end
-
-p Order.all
+# p Order.all

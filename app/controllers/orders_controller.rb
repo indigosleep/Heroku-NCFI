@@ -1,9 +1,11 @@
 require 'shopify_api'
-API_KEY = "e1c86625102fe6d8f9b157ef0cc41965"
-PASSWORD = "0fcef94cc5e4cfde2d4a097e992a9cfe"
+# require 'HTTParty'
+require_relative '../../BarnhardtMessage'
+SHOPIFY_API_KEY = "e1c86625102fe6d8f9b157ef0cc41965"
+SHOPIFY_PASSWORD = "0fcef94cc5e4cfde2d4a097e992a9cfe"
 SHOP_NAME = "indigo-sleep"
 
-shop_url = "https://#{API_KEY}:#{PASSWORD}@#{SHOP_NAME}.myshopify.com/admin"
+shop_url = "https://#{SHOPIFY_API_KEY}:#{SHOPIFY_PASSWORD}@#{SHOP_NAME}.myshopify.com/admin"
 ShopifyAPI::Base.site = shop_url
 
 shop = ShopifyAPI::Shop.current
@@ -15,43 +17,104 @@ class OrdersController < ApplicationController
   def index
   end
 
+
+
   def create
-    @order = ShopifyAPI::Order.find(params[:id])
-    puts "!!!!!!!!!!!!!!!!SHIPPING ADDRESS IS!!!!!!!!!!!!!"
-    p @order.shipping_address
-    puts "!!!!!!!!!!!!!!!!SHIPPING ADDRESS!!!!!!!!!!!!!"
+
+    if existingOrder = Order.find_by(shopifyID: params[:id])
+
+      if existingOrder.update(filteredOrderParams(orderParams))
+        respond_to do |format|
+          format.json { render json: existingOrder.to_json, status: 201 }
+          puts ("UPDATED!!!!!!!!!!!!!!!!!")
+        end
+      else
+        respond_to do |format|
+          format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
+        end
+      end
+
+    else
+
+      @order = Order.new(filteredOrderParams(orderParams))
+
+      if @order.save
+
+        params[:line_items].each do |lineItem|
+          @order.line_items.build(
+          # lineItemParams
+            shopifyID: lineItem[:id],
+            title: lineItem[:title],
+            quantity: lineItem[:quantity],
+            price: lineItem[:price],
+            sku: lineItem[:sku],
+            fulfillment_service: lineItem[:fulfillment_service],
+            product_id: lineItem[:product_id],
+            name: lineItem[:name],
+            properties: lineItem[:properties],
+            fulfillment_status: lineItem[:fulfillment_status]
+          ).save
+        end
+
+        @order.shipping_addresses.build(shippingAddressParams).save
+
+        BarnhardtMessage.new(@order)
+
+        respond_to do |format|
+          format.json { render json: @order.to_json, status: 201 }
+        end
+      else
+        respond_to do |format|
+          format.json { render json: @order.errors.full_messages.to_json, status: 422 }
+        end
+      end
+
+    end
 
   end
 
-  # def create
-  #   # id = params[:id]
-  #   # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
-  #   # p id
-  #   # puts ("!!!!!!!!!!!!!!!!!!!!!!!")
-  #
-  #   if existingOrder = Order.find_by_id(params[:id])
-  #
-  #     if existingOrder.update(orderParams)
-  #       format.json { render json: existingOrder.to_json, status: 201 }
-  #       puts ("UPDATED!!!!!!!!!!!!!!!!!")
-  #     else
-  #       format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
-  #     end
-  #
-  #   else
-  #
-  #     @order = Order.new(orderParams)
-  #     if @order.save
-  #       format.json { render json: @order.to_json, status: 201 }
-  #     else
-  #       format.json { render json: @order.errors.full_messages.to_json, status: 422 }
-  #     end
-  #
-  #   end
-  # end
-
 
   private
+
+  def filteredOrderParams(orderParams)
+    filteredParams = {}
+    orderParams.each do |key, value|
+      # puts "??????????????"
+      # puts "key"
+      # p key
+      # puts "value"
+      # p value
+      # puts "??????????????????"
+      if key == "id"
+        puts "Change ID!!!!!!!!!!!!!"
+        filteredParams[:shopifyID] = value
+      else
+        filteredParams[key] = value
+      end
+    end
+    puts "filteredParams"
+    p filteredParams
+    filteredParams
+  end
+
+  def shippingAddressParams
+    params.require(:shipping_address).permit(
+      :name,
+      :address1,
+      :phone,
+      :city,
+      :zip,
+      :province_code,
+      :province,
+      :country,
+      :country_code,
+      :address2,
+      :company,
+      :fulfillments,
+      :refunds
+    )
+  end
+
   def orderParams
     params.permit(
 
@@ -106,30 +169,7 @@ class OrdersController < ApplicationController
       :tags,
       :contact_email,
       :order_status_url,
-      {:line_items => [
-        :id,
-        :variant_id,
-        :title,
-        :quantity,
-        :price,
-        :grams,
-        :sku,
-        :variant_title,
-        :vendor,
-        :fulfillment_service,
-        :product_id,
-        :requires_shipping,
-        :taxable,
-        :gift_card,
-        :name,
-        :variant_inventory_management,
-        {:properties => []},
-        :product_exists,
-        :fulfillable_quantity,
-        :total_discount,
-        :fulfillment_status,
-        {:tax_lines => []},
-      ]},
+
       {:shipping_lines =>[
         :id,
         :title,
@@ -140,7 +180,7 @@ class OrdersController < ApplicationController
         :requested_fulfillment_service_id,
         :delivery_category,
         :carrier_identifier,
-        {:tax_lines => []},
+        {:tax_lines => []}
       ]},
       {:billing_address => [
         :first_name,
@@ -159,24 +199,8 @@ class OrdersController < ApplicationController
         :country_code,
         :province_code,
       ]},
-      {:shipping_address => [
-        :first_name,
-        :address1,
-        :phone,
-        :city,
-        :zip,
-        :province,
-        :country,
-        :last_name,
-        :address2,
-        :company,
-        :latitude,
-        :longitude,
-        :name,
-        :country_code,
-        :province_code,
-      ]},
-      {:fulfillments => []},
+
+      # {:fulfillments => []},
       {:refunds => []},
       {:customer => [
         :id,
@@ -215,7 +239,36 @@ class OrdersController < ApplicationController
           :country_name,
           :default,
         ]}
-      ]}
+      ]},
+      # line_item_attributes: [
+      #
+      #   params[:line_items][:id],
+      #   :line_items[:title],
+      #   :line_items[:quantity],
+      #   :line_items[:price],
+      #   :line_items[:sku],
+      #   :line_items[:fulfillment_service],
+      #   :line_items[:product_id],
+      #   :line_items[:name],
+      #   :line_items[:properties],
+      #   :line_items[:fulfillment_status],
+      #
+      # ],
+      #
+      # shipping_address_attributes: [
+      #   :shipping_address["name"],
+      #   :shipping_address["address1"],
+      #   :shipping_address["phone"],
+      #   :shipping_address["city"],
+      #   :shipping_address["zip"],
+      #   :shipping_address["province_code"], #state
+      #   :shipping_address["province"], #state
+      #   :shipping_address["country_code"],
+      #   :shipping_address["address2"],
+      #   :shipping_address["company"],
+      #   :shipping_address["fulfillments"],
+      #   :shipping_address["refunds"],
+      # ],
 
     )
   end

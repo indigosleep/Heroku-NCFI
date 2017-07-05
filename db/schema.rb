@@ -10,10 +10,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170630141553) do
+ActiveRecord::Schema.define(version: 20170705143057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "line_items", id: :bigserial, force: :cascade do |t|
+    t.string   "variant_id"
+    t.string   "title"
+    t.integer  "quantity"
+    t.float    "price"
+    t.float    "grams"
+    t.string   "sku"
+    t.string   "variant_title"
+    t.string   "vendor"
+    t.string   "fulfillment_service"
+    t.bigint   "product_id"
+    t.boolean  "requires_shipping"
+    t.boolean  "taxable"
+    t.boolean  "gift_card"
+    t.string   "pre_tax_price"
+    t.string   "name"
+    t.string   "variant_inventory_management"
+    t.text     "properties"
+    t.boolean  "product_exists"
+    t.integer  "fulfillable_quantity"
+    t.string   "total_discount"
+    t.string   "fulfillment_status"
+    t.text     "tax_lines"
+    t.bigint   "order_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.bigint   "shopifyID"
+    t.index ["order_id"], name: "index_line_items_on_order_id", using: :btree
+  end
 
   create_table "orders", id: :bigserial, force: :cascade do |t|
     t.datetime "created_at",              null: false
@@ -65,13 +95,35 @@ ActiveRecord::Schema.define(version: 20170630141553) do
     t.string   "tags"
     t.string   "contact_email"
     t.string   "order_status_url"
-    t.text     "line_items"
     t.text     "shipping_lines"
     t.text     "billing_address"
-    t.text     "shipping_address"
-    t.text     "fulfillments"
     t.text     "refunds"
     t.text     "customer"
+    t.bigint   "shopifyID"
+  end
+
+  create_table "shipping_addresses", force: :cascade do |t|
+    t.string   "first_name"
+    t.string   "address1"
+    t.string   "phone"
+    t.string   "city"
+    t.string   "zip"
+    t.string   "province"
+    t.string   "country"
+    t.string   "last_name"
+    t.string   "address2"
+    t.string   "company"
+    t.string   "latitude"
+    t.string   "longitude"
+    t.string   "name"
+    t.string   "country_code"
+    t.string   "province_code"
+    t.text     "fulfillments"
+    t.text     "refunds"
+    t.bigint   "order_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["order_id"], name: "index_shipping_addresses_on_order_id", using: :btree
   end
 
 end
