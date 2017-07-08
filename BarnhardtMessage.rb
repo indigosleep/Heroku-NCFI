@@ -1,4 +1,4 @@
-require 'HTTParty'
+# require 'HTTParty'
 
 # local testmode requires creating a shopify order creation webhook for https://sawyermerchant.pagekite.me/api/v1/orders
 # run pagekite with: pagekite.py 3000 sawyermerchant.pagekite.me
@@ -77,7 +77,7 @@ class BarnhardtMessage
       "notification_urls": {
         "order_acknowledgement": "#{HOME_URL}/acknowledgements/#{ackNum}.json",
         "ship_notice": "#{HOME_URL}/shipnotices/#{sNoteNum}.json"
-        
+
       }
     }
   end

@@ -1,4 +1,4 @@
-require 'HTTParty'
+# require 'HTTParty'
 
 BASE_URL = "http://indigosleep.herokuapp.com/api/v1/shipnotices/35.json"
 # BASE_URL = "https://sawyermerchant.pagekite.me/api/v1/shipnotices/35.json"

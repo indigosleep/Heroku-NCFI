@@ -1,4 +1,4 @@
-require 'HTTParty'
+# require 'HTTParty'
 
 # BASE_URL = "http://localhost:3000/api/v1/orders"
 BASE_URL = "https://sawyermerchant.pagekite.me/api/v1/acknowledgements/2.json"

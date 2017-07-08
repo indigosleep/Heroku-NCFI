@@ -1,5 +1,5 @@
 require "base64"
-require 'HTTParty'
+# require 'HTTParty'
 
 BASE_URL = "https://indigo-sleep.myshopify.com/admin/orders/"
 
