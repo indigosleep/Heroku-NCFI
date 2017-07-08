@@ -6,8 +6,10 @@ Rails.application.routes.draw do
   scope :api do
     scope :v1 do
       resources :orders do
-        :line_items
+        # :line_items
       end
+      resources :acknowledgements
+      resources :shipnotices
     end
   end
 

@@ -10,12 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170705143057) do
+ActiveRecord::Schema.define(version: 20170706152103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "line_items", id: :bigserial, force: :cascade do |t|
+  create_table "acknowledgements", force: :cascade do |t|
+    t.integer  "order_id"
+    t.bigint   "barnhardt_order_number"
+    t.string   "barnhardt_status"
+    t.text     "barnhardt_errors"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.index ["order_id"], name: "index_acknowledgements_on_order_id", using: :btree
+  end
+
+  create_table "line_items", force: :cascade do |t|
     t.string   "variant_id"
     t.string   "title"
     t.integer  "quantity"
@@ -38,16 +48,14 @@ ActiveRecord::Schema.define(version: 20170705143057) do
     t.string   "total_discount"
     t.string   "fulfillment_status"
     t.text     "tax_lines"
-    t.bigint   "order_id"
+    t.bigint   "shopifyID"
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
-    t.bigint   "shopifyID"
+    t.integer  "order_id"
     t.index ["order_id"], name: "index_line_items_on_order_id", using: :btree
   end
 
-  create_table "orders", id: :bigserial, force: :cascade do |t|
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+  create_table "orders", force: :cascade do |t|
     t.string   "email"
     t.string   "closed_at"
     t.integer  "number"
@@ -100,6 +108,18 @@ ActiveRecord::Schema.define(version: 20170705143057) do
     t.text     "refunds"
     t.text     "customer"
     t.bigint   "shopifyID"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.integer  "version",                 default: 1
+  end
+
+  create_table "shipnotices", force: :cascade do |t|
+    t.integer  "order_id"
+    t.string   "purchase_order_line"
+    t.text     "barnhardt_tracking"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.index ["order_id"], name: "index_shipnotices_on_order_id", using: :btree
   end
 
   create_table "shipping_addresses", force: :cascade do |t|

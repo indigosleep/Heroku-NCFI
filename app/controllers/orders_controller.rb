@@ -1,11 +1,13 @@
 require 'shopify_api'
 # require 'HTTParty'
 require_relative '../../BarnhardtMessage'
-SHOPIFY_API_KEY = "e1c86625102fe6d8f9b157ef0cc41965"
-SHOPIFY_PASSWORD = "0fcef94cc5e4cfde2d4a097e992a9cfe"
-SHOP_NAME = "indigo-sleep"
+require_relative '../../Shopify'
 
-shop_url = "https://#{SHOPIFY_API_KEY}:#{SHOPIFY_PASSWORD}@#{SHOP_NAME}.myshopify.com/admin"
+SHOPIFY_API_KEY = ENV["SHOPIFY_API_KEY"]
+SHOPIFY_PASSWORD = ENV["SHOPIFY_PASSWORD"]
+SHOPIFY_SHOP_NAME = ENV["SHOPIFY_SHOP_NAME"]
+
+shop_url = "https://#{SHOPIFY_API_KEY}:#{SHOPIFY_PASSWORD}@#{SHOPIFY_SHOP_NAME}.myshopify.com/admin"
 ShopifyAPI::Base.site = shop_url
 
 shop = ShopifyAPI::Shop.current
@@ -58,7 +60,18 @@ class OrdersController < ApplicationController
 
         @order.shipping_addresses.build(shippingAddressParams).save
 
-        BarnhardtMessage.new(@order)
+        ack = @order.acknowledgements.build()
+        ack.save
+        ackNum = ack.id
+
+        ship_notice = @order.shipnotices.build()
+        ship_notice.save
+        sNoteNum = ship_notice.id
+        # byebug
+        BarnhardtMessage.new(@order, ackNum, sNoteNum)
+        #TODO don't update shopify w/o Barnhardt
+        # shopify = Shopify.new
+        # shopify.makeFulfillment(@order)
 
         respond_to do |format|
           format.json { render json: @order.to_json, status: 201 }

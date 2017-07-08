@@ -1,63 +1,64 @@
 require 'HTTParty'
 
+# local testmode requires creating a shopify order creation webhook for https://sawyermerchant.pagekite.me/api/v1/orders
+# run pagekite with: pagekite.py 3000 sawyermerchant.pagekite.me
 class BarnhardtMessage
-  # BASE_URL = "https://api.barnhardt.net/v1/order"
-  BASE_URL = "https://requestb.in/pja0zbpj"
-  HOME_URL = "https://indigosleep.herokuapp.com/api/v1/orders"
   attr_reader :order
+  BASE_URL = "https://api.barnhardt.net/v1/order"
+  # BASE_URL = "https://requestb.in/pja0zbpj"
+  HOME_URL = "https://indigosleep.herokuapp.com/api/v1"
+  # HOME_URL = "https://sawyermerchant.pagekite.me/api/v1"
+  BARNHARDT_SKUS = {
+    "C-MAT-TW-01": "IND-CL-TW",
+    "C-MAT-TX-01": "IND-CL-TL",
+    "C-MAT-FL-01": "IND-CL-FU",
+    "C-MAT-QU-01": "IND-CL-QU",
+    "C-MAT-KG-01": "IND-CL-KG",
+    "C-MAT-CK-01": "IND-CL-CK",
 
-  def initialize(shopifyOrder)
+    "L-MAT-TW-01": "IND-LU-TW",
+    "L-MAT-TX-01": "IND-LU-TL",
+    "L-MAT-FL-01": "IND-LU-FU",
+    "L-MAT-QU-01": "IND-LU-QU",
+    "L-MAT-KG-01": "IND-LU-KG",
+    "L-MAT-CK-01": "IND-LU-CK"
+  }
+
+  def initialize(shopifyOrder, ackNum, sNoteNum)
     shipAddress = shopifyOrder.shipping_addresses.last
-    orderBody = makeOrder(shopifyOrder, shipAddress)
+    orderBody = makeOrder(shopifyOrder, shipAddress, ackNum, sNoteNum)
     headers = makeHeaders
     sendMessage(headers, orderBody)
   end
 
   def skuConvert(indigoSku)
-    barnhardtSkus = {
-      "C-MAT-TW-01": "IND-CL-TW",
-      "C-MAT-TX-01": "IND-CL-TL",
-      "C-MAT-FL-01": "IND-CL-FU",
-      "C-MAT-QU-01": "IND-CL-QU",
-      "C-MAT-KG-01": "IND-CL-KG",
-      "C-MAT-CK-01": "IND-CL-CK",
-
-      "L-MAT-TW-01": "IND-LU-TW",
-      "L-MAT-TX-01": "IND-LU-TL",
-      "L-MAT-FL-01": "IND-LU-FU",
-      "L-MAT-QU-01": "IND-LU-QU",
-      "L-MAT-KG-01": "IND-LU-KG",
-      "L-MAT-CK-01": "IND-LU-CK"
-    }
-
-    return barnhardtSkus[indigoSku.to_sym]
+    return BARNHARDT_SKUS[indigoSku.to_sym]
   end
 
-  def makeOrder(order, shipAddress)
+  def makeOrder(order, shipAddress, ackNum, sNoteNum)
     idString = order.id.to_s
-    puts "!!!!!!!!!!!!order.id.to_s!!!!!!!!"
-    puts idString
-
     line_items = []
-    order.line_items.each do |li|
 
-      line_item = {
-        "purchase_order_line": li.id.to_s, #"203",
-        "note": order.note || "",
-        "product_external_id": li.sku,
-        "product_id": skuConvert(li.sku),
-        "quantity": li.quantity
-      }
-      line_items << line_item
+    order.line_items.each do |li|
+      if BARNHARDT_SKUS.key?(li.sku.to_sym)
+        line_item = {
+          "purchase_order_line": li.id.to_s,
+          "note": order.note || "",
+          "product_external_id": li.sku,
+          "product_id": skuConvert(li.sku),
+          "quantity": li.quantity
+        }
+        line_items << line_item
+      end
     end
 
     return {
       "customer_edi_id": ENV["BARNHARDT_EDI_ID"],
-      "purchase_order": order.id.to_s, #"301",
+      "purchase_order": order.id.to_s,
       "purchase_order_revision": 1,
       "carrier": "FDX",
-      "required_date": "2018-06-10T16:30:00-07:00", #6.days.from_now.iso8601,
-      "not_before_date": "2014-06-10T16:30:00-07:00",# Time.now.iso8601,
+      "required_date": 6.days.from_now.iso8601,
+      "not_before_date": Time.now.iso8601,
       "note": order.note || "",
       "order_lines": line_items,
       "shipTo": {
@@ -74,10 +75,9 @@ class BarnhardtMessage
         "state": shipAddress.province_code
       },
       "notification_urls": {
-        "order_acknowledgement": "#{HOME_URL}/#{idString}",
-        "ship_notice": "#{HOME_URL}/#{idString}"
-        #ALL NOTICES GOING TO THE SAME PLACE NOW
-        # TODO RECREATE HOOK: https://indigosleep.herokuapp.com/api/v1/orders
+        "order_acknowledgement": "#{HOME_URL}/acknowledgements/#{ackNum}.json",
+        "ship_notice": "#{HOME_URL}/shipnotices/#{sNoteNum}.json"
+        
       }
     }
   end

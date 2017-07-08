@@ -1,7 +1,7 @@
 require 'shopify_api'
-API_KEY = "e1c86625102fe6d8f9b157ef0cc41965"
-PASSWORD = "0fcef94cc5e4cfde2d4a097e992a9cfe"
-SHOP_NAME = "indigo-sleep"
+SHOPIFY_API_KEY = ENV["SHOPIFY_API_KEY"]
+SHOPIFY_PASSWORD = ENV["SHOPIFY_PASSWORD"]
+SHOPIFY_SHOP_NAME = ENV["SHOPIFY_SHOP_NAME"]
 
 shop_url = "https://#{API_KEY}:#{PASSWORD}@#{SHOP_NAME}.myshopify.com/admin"
 ShopifyAPI::Base.site = shop_url
