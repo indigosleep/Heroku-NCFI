@@ -6,7 +6,7 @@ class Shopify
   SHOPIFY_SHOP_NAME = ENV["SHOPIFY_SHOP_NAME"]
 
   def initialize
-    shop_url = "https://#{API_KEY}:#{PASSWORD}@#{SHOP_NAME}.myshopify.com/admin"
+    shop_url = "https://#{SHOPIFY_API_KEY}:#{SHOPIFY_PASSWORD}@#{SHOPIFY_SHOP_NAME}.myshopify.com/admin"
     ShopifyAPI::Base.site = shop_url
     shop = ShopifyAPI::Shop.current
   end
