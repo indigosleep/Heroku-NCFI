@@ -81,33 +81,33 @@ class Shopify
 
   def sendShipNotice(order, notice)
 
-    shopifyOrder = ShopifyAPI::Order.find(order.shopifyID)
+    # shopifyOrder = ShopifyAPI::Order.find(order.shopifyID)
 
-    line_items = []
-    order.line_items.each do |li|
-      line_item = {}
-      line_item[:fulfillable_quantity] = 999
-      line_item[:fulfillment_service] = li.fulfillment_service
-      # line_item[:fulfillment_status] = null
-      line_item[:grams] = li.grams
-      line_item[:id] = li.shopifyID
-      line_item[:price] = li.price
-      line_item[:product_id] = li.product_id
-      line_item[:quantity] = 1
-      line_item[:requires_shipping] = true
-      line_item[:sku] = li.sku
-      line_item[:title] = li.title
-      line_item[:variant_id] = li.variant_id
-      line_item[:variant_title] = li.variant_title
-      line_item[:vendor] = "IndigoSleep"
-      line_item[:name] = li.name
-      line_item[:shipment_status] = "in_transit"
-      line_item[:variant_inventory_management] = li.variant_inventory_management
-      line_item[:properties] = "[ ]"
-      line_item[:product_exists] = true
-
-      line_items << line_item
-    end
+    # line_items = []
+    # order.line_items.each do |li|
+    #   line_item = {}
+    #   line_item[:fulfillable_quantity] = 999
+    #   line_item[:fulfillment_service] = li.fulfillment_service
+    #   # line_item[:fulfillment_status] = null
+    #   line_item[:grams] = li.grams
+    #   line_item[:id] = li.shopifyID
+    #   line_item[:price] = li.price
+    #   line_item[:product_id] = li.product_id
+    #   line_item[:quantity] = 1
+    #   line_item[:requires_shipping] = true
+    #   line_item[:sku] = li.sku
+    #   line_item[:title] = li.title
+    #   line_item[:variant_id] = li.variant_id
+    #   line_item[:variant_title] = li.variant_title
+    #   line_item[:vendor] = "IndigoSleep"
+    #   line_item[:name] = li.name
+    #   line_item[:shipment_status] = "in_transit"
+    #   line_item[:variant_inventory_management] = li.variant_inventory_management
+    #   line_item[:properties] = "[ ]"
+    #   line_item[:product_exists] = true
+    #
+    #   line_items << line_item
+    # end
 
 
     # newFulfillment = ShopifyAPI::Fulfillment.new(
@@ -121,10 +121,12 @@ class Shopify
     # ).save
 
     f = ShopifyAPI::Fulfillment.new(order_id: order.shopifyID)
-    f.line_items = line_items
-    f.status = "open"
+    # f.line_items = line_items
+    # f.status = "open"
+    f.notify_customer = true
     f.tracking_company = "Fedex"
-    f.tracking_numbers = [notice[:tracking]]
+    # f.tracking_numbers = [notice[:tracking]]
+    f.tracking_number = notice[:tracking]
     f.tracking_urls = [notice[:url]]
     f.save
 
