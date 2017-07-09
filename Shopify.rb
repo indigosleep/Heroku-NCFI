@@ -42,19 +42,20 @@ class Shopify
     end
 
     newFulfillment = ShopifyAPI::Fulfillment.new(
-      status: "open",
-      line_items: line_items,
-      notify_customer: false,
+      # status: "open",
+      # line_items: line_items,
+      notify_customer: true,
       order_id: order.shopifyID,
-      receipt: [
-        {
-          testcase: true,
-          authroization: 1
-        }
-      ],
-      tracking_company: "FedEx"
+      # receipt: [
+      #   {
+      #     testcase: true,
+      #     authroization: 1
+      #   }
+      # ],
+      tracking_company: "FedEx",
       # tracking_numbers: [notice.tracking],
-      # tracking_urls: [notice.url]
+      tracking_number: notice.tracking,
+      tracking_urls: [notice.url]
     ).save
 
     #save fullfilment id to local order table
