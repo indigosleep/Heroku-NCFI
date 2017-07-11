@@ -1,4 +1,5 @@
 require 'shopify_api'
+require 'base64'
 # require 'HTTParty'
 require_relative '../../BarnhardtMessage'
 require_relative '../../Shopify'
@@ -6,6 +7,8 @@ require_relative '../../Shopify'
 SHOPIFY_API_KEY = ENV["SHOPIFY_API_KEY"]
 SHOPIFY_PASSWORD = ENV["SHOPIFY_PASSWORD"]
 SHOPIFY_SHOP_NAME = ENV["SHOPIFY_SHOP_NAME"]
+SHARED_SECRET = ENV["SHOPIFY_SHARED_SECRET"]
+TEST_HOOK_SECRET = "8c3f7ef6c9344daeca59a1fa170aa5716d71865f928db62b0b887bca1c32ff20"
 
 shop_url = "https://#{SHOPIFY_API_KEY}:#{SHOPIFY_PASSWORD}@#{SHOPIFY_SHOP_NAME}.myshopify.com/admin"
 ShopifyAPI::Base.site = shop_url
@@ -15,6 +18,7 @@ shop = ShopifyAPI::Shop.current
 
 class OrdersController < ApplicationController
   skip_before_action :verify_authenticity_token
+  # before_action :verify_webhook, only: [:create]
 
   def index
   end
@@ -22,72 +26,102 @@ class OrdersController < ApplicationController
 
 
   def create
+    request.body.rewind
+    data = request.body.read
+    headDigest = request.headers["X-Shopify-Hmac-Sha256"]
+    verified = verify_webhook(data, headDigest)
 
-    if existingOrder = Order.find_by(shopifyID: params[:id])
+    if verified
+      if existingOrder = Order.find_by(shopifyID: params[:id])
 
-      if existingOrder.update(filteredOrderParams(orderParams))
-        respond_to do |format|
-          format.json { render json: existingOrder.to_json, status: 201 }
-          puts ("UPDATED!!!!!!!!!!!!!!!!!")
+        if existingOrder.update(filteredOrderParams(orderParams))
+          respond_to do |format|
+            format.json { render json: existingOrder.to_json, status: 201 }
+            puts ("UPDATED!!!!!!!!!!!!!!!!!")
+          end
+        else
+          respond_to do |format|
+            format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
+          end
         end
+
       else
-        respond_to do |format|
-          format.json { render json: existingOrder.errors.full_messages.to_json, status: 422 }
+
+        @order = Order.new(filteredOrderParams(orderParams))
+
+        if @order.save
+
+          params[:line_items].each do |lineItem|
+            @order.line_items.build(
+            # lineItemParams
+              shopifyID: lineItem[:id],
+              title: lineItem[:title],
+              quantity: lineItem[:quantity],
+              price: lineItem[:price],
+              sku: lineItem[:sku],
+              fulfillment_service: lineItem[:fulfillment_service],
+              product_id: lineItem[:product_id],
+              name: lineItem[:name],
+              properties: lineItem[:properties],
+              fulfillment_status: lineItem[:fulfillment_status]
+            ).save
+          end
+
+          if params[:shipping_address]
+            @order.shipping_addresses.build(shippingAddressParams).save
+            puts "Primary Address Input"
+          else
+            @order.shipping_addresses.build(customerShippingAddressParams).save
+            puts "Secondary Address Input"
+          end
+
+          ack = @order.acknowledgements.build()
+          ack.save
+          ackNum = ack.id
+
+          ship_notice = @order.shipnotices.build()
+          ship_notice.save
+          sNoteNum = ship_notice.id
+          # byebug
+          BarnhardtMessage.new(@order, ackNum, sNoteNum)
+          #TODO don't update shopify w/o Barnhardt
+          # shopify = Shopify.new
+          # shopify.makeFulfillment(@order)
+
+          respond_to do |format|
+            format.json { render json: @order.to_json, status: 201 }
+          end
+        else
+          respond_to do |format|
+            format.json { render json: @order.errors.full_messages.to_json, status: 422 }
+          end
         end
       end
-
-    else
-
-      @order = Order.new(filteredOrderParams(orderParams))
-
-      if @order.save
-
-        params[:line_items].each do |lineItem|
-          @order.line_items.build(
-          # lineItemParams
-            shopifyID: lineItem[:id],
-            title: lineItem[:title],
-            quantity: lineItem[:quantity],
-            price: lineItem[:price],
-            sku: lineItem[:sku],
-            fulfillment_service: lineItem[:fulfillment_service],
-            product_id: lineItem[:product_id],
-            name: lineItem[:name],
-            properties: lineItem[:properties],
-            fulfillment_status: lineItem[:fulfillment_status]
-          ).save
-        end
-
-        @order.shipping_addresses.build(shippingAddressParams).save
-
-        ack = @order.acknowledgements.build()
-        ack.save
-        ackNum = ack.id
-
-        ship_notice = @order.shipnotices.build()
-        ship_notice.save
-        sNoteNum = ship_notice.id
-        # byebug
-        BarnhardtMessage.new(@order, ackNum, sNoteNum)
-        #TODO don't update shopify w/o Barnhardt
-        # shopify = Shopify.new
-        # shopify.makeFulfillment(@order)
-
-        respond_to do |format|
-          format.json { render json: @order.to_json, status: 201 }
-        end
-      else
-        respond_to do |format|
-          format.json { render json: @order.errors.full_messages.to_json, status: 422 }
-        end
-      end
-
     end
 
   end
 
 
   private
+
+
+  def verify_webhook(data, hmac_header)
+    digest  = OpenSSL::Digest::Digest.new('sha256')
+    test_calculated_hmac = Base64.encode64(OpenSSL::HMAC.digest(digest, TEST_HOOK_SECRET, data)).strip
+    calculated_hmac = Base64.encode64(OpenSSL::HMAC.digest(digest, SHARED_SECRET, data)).strip
+
+    if ActiveSupport::SecurityUtils.secure_compare(test_calculated_hmac, hmac_header)
+      puts "Test Mode Message"
+      return true
+    elsif ActiveSupport::SecurityUtils.secure_compare(calculated_hmac, hmac_header)
+      puts "Live Message"
+      return true
+    else
+      puts "Base64 Digest Mismatch"
+      return false
+    end
+
+  end
 
   def filteredOrderParams(orderParams)
     filteredParams = {}
@@ -99,15 +133,36 @@ class OrdersController < ApplicationController
       # p value
       # puts "??????????????????"
       if key == "id"
-        puts "Change ID!!!!!!!!!!!!!"
+        # puts "Change ID!!!!!!!!!!!!!"
         filteredParams[:shopifyID] = value
       else
         filteredParams[key] = value
       end
     end
-    puts "filteredParams"
-    p filteredParams
+    # puts "filteredParams"
+    # p filteredParams
     filteredParams
+  end
+
+  def customerShippingAddressParams
+    params.require(:order).require(:customer).require(:default_address).permit(
+
+      :first_name,
+      :last_name,
+      :company,
+      :address1,
+      :address2,
+      :city,
+      :province,
+      :country,
+      :zip,
+      :phone,
+      :name,
+      :province_code,
+      :country_code,
+      # :country_name,
+      # :default
+    )
   end
 
   def shippingAddressParams
