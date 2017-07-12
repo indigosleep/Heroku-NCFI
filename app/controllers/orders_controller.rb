@@ -126,21 +126,12 @@ class OrdersController < ApplicationController
   def filteredOrderParams(orderParams)
     filteredParams = {}
     orderParams.each do |key, value|
-      # puts "??????????????"
-      # puts "key"
-      # p key
-      # puts "value"
-      # p value
-      # puts "??????????????????"
       if key == "id"
-        # puts "Change ID!!!!!!!!!!!!!"
         filteredParams[:shopifyID] = value
       else
         filteredParams[key] = value
       end
     end
-    # puts "filteredParams"
-    # p filteredParams
     filteredParams
   end
 

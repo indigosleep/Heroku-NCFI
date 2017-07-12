@@ -14,3 +14,6 @@ headers: headers
 )
 
 p orders
+
+puts "number of orders"
+p orders.length

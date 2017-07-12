@@ -128,6 +128,7 @@ class Shopify
     # f.tracking_numbers = [notice[:tracking]]
     f.tracking_number = notice[:tracking]
     f.tracking_urls = [notice[:url]]
+    f.tracking_url = notice[:url]
     f.save
 
     #save fullfilment id to local order table
