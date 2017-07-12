@@ -1,4 +1,5 @@
 require 'shopify_api'
+require_relative 'zenTicket'
 
 class Shopify
   SHOPIFY_API_KEY = ENV["SHOPIFY_API_KEY"]
@@ -129,7 +130,14 @@ class Shopify
     f.tracking_number = notice[:tracking]
     f.tracking_urls = [notice[:url]]
     f.tracking_url = notice[:url]
-    f.save
+
+    if f.save
+      puts "Successful Shopify Fulfilment"
+    else
+      zt = ZenTicket.new
+      message = "Shopify Transmission Error"
+      zt.sendError(params)
+    end
 
     #save fullfilment id to local order table
 

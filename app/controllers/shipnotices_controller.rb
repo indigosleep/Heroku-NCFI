@@ -1,4 +1,5 @@
 require_relative '../../Shopify'
+require_relative '../../zenTicket'
 
 class ShipnoticesController < ApplicationController
   skip_before_action :verify_authenticity_token
@@ -25,6 +26,9 @@ class ShipnoticesController < ApplicationController
 
         format.json { render json: @shipNote.to_json, status: 201 }
       else
+        zt = ZenTicket.new
+        zt.sendShipError(params)
+
         format.json { render json: @shipNote.errors.full_messages.to_json, status: 422 }
       end
     end

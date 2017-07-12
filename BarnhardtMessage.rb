@@ -45,7 +45,7 @@ class BarnhardtMessage
           "purchase_order_line": li.id.to_s,
           "note": order.note || "",
           "product_external_id": li.sku,
-          "product_id": skuConvert(li.sku),
+          "product_id": "ERROR!!!!",#skuConvert(li.sku),
           "quantity": li.quantity
         }
         line_items << line_item

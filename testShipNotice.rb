@@ -1,13 +1,13 @@
 require 'HTTParty'
 
-# BASE_URL = "http://indigosleep.herokuapp.com/api/v1/shipnotices/41.json"
-BASE_URL = "https://sawyermerchant.pagekite.me/api/v1/shipnotices/45.json"
+BASE_URL = "http://indigosleep.herokuapp.com/api/v1/shipnotices/31.json"
+# BASE_URL = "https://sawyermerchant.pagekite.me/api/v1/shipnotices/45.json"
 
 body =
   {
   "customer_edi_id": "402100100554",
-  "purchase_order": "805",
-  "purchase_order_line": "56",
+  "purchase_order": "801",
+  "purchase_order_line": "33",
   "tracking": [
     {
       "carrier": "FDX",

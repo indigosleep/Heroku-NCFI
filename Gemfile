@@ -9,6 +9,8 @@ gem 'shopify_api'
 
 gem 'httparty'
 
+gem "zendesk_api"
+
 # for shopify token verification
 gem 'openssl'
 
