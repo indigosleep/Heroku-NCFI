@@ -31,8 +31,13 @@ class BarnhardtMessage
     sendMessage(headers, orderBody)
   end
 
+  def trimSku(indigoSku)
+    indigoSku[0..10]
+  end
+
   def skuConvert(indigoSku)
-    return BARNHARDT_SKUS[indigoSku.to_sym]
+    trimmedIndigoSku = trimSku(indigoSku)
+    return BARNHARDT_SKUS[trimmedIndigoSku.to_sym]
   end
 
   def makeOrder(order, shipAddress, ackNum, sNoteNum)
@@ -40,7 +45,8 @@ class BarnhardtMessage
     line_items = []
 
     order.line_items.each do |li|
-      if BARNHARDT_SKUS.key?(li.sku.to_sym)
+      trimmedIndigoSku = trimSku(li.sku)
+      if BARNHARDT_SKUS.key?(trimmedIndigoSku.to_sym)
         line_item = {
           "purchase_order_line": li.id.to_s,
           "note": order.note || "",
@@ -90,6 +96,8 @@ class BarnhardtMessage
   end
 
   def sendMessage(headers, orderBody)
+    puts "To Barnhardt"
+    p orderBody
     response = HTTParty.post(
     BASE_URL,
     headers: headers,
