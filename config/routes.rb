@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       end
       resources :acknowledgements
       resources :shipnotices
+      resources :discounts, only: [:index]
     end
   end
 
