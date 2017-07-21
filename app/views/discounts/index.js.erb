@@ -1,20 +1,18 @@
- <% if @discountCount > 0 %>
-
-     ( function() {
-
-       console.log("Heroku loaded");
-
-       if (document.getElementsByClassName('applied-reduction-code__information').length === 0) {
-
-         document.getElementById('checkout_reduction_code').value="PaySleepForward"
-
-         // "<%# @discount.name %>";
-
-         // document.getElementsByClassName('edit_checkout')[0].submit();
-
-       }
-
-
-     })();
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+console.log("Heroku loaded");
+<% if @discountCount > 0 %>
+  (async function() {
+    await sleep(500);
+    if (document.getElementsByClassName('applied-reduction-code__information').length < 1) {
+      document.getElementById('checkout_reduction_code').value="PaySleepForward";
+      // "<%# @discount.name %>";
+      document.getElementsByClassName('edit_checkout')[0].submit();
+      await sleep(500);
+    }else{
+      document.getElementsByClassName("order-summary__section--discount")[0].style.display = 'none';
+    }
+    })();
 
  <% end %>
