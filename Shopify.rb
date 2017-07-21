@@ -1,6 +1,6 @@
 require 'shopify_api'
 require_relative 'zenTicket'
-require 'HTTParty'
+# require 'HTTParty'
 # require 'base64'
 
 class Shopify
