@@ -4,7 +4,13 @@
 
   console.log("Heroku loaded");
 
-  document.getElementById('checkout_reduction_code').value="PaySleepForward";
-  document.getElementsByClassName('edit_checkout animate-floating-labels')[0].submit();
+  if (document.getElementsByClassName('applied-reduction-code__information').length === 0) {
+
+    document.getElementById('checkout_reduction_code').value="PaySleepForward";
+
+    document.getElementsByClassName('edit_checkout')[0].submit();
+
+  }
+
 
 })();
