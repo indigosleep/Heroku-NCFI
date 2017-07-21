@@ -8,6 +8,7 @@ Bundler.require(*Rails.groups)
 
 module Indigo
   class Application < Rails::Application
+    # config.web_console.whitelisted_ips = "72.185.143.105"
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
