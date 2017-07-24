@@ -15,7 +15,7 @@ class AcknowledgementsController < ApplicationController
         barnhardt_status: params[:status]
       )
 
-        if params[:errors]
+        if params[:errors].length > 0
           zt = ZenTicket.new
           zt.sendBarnhardtError(params)
         end
