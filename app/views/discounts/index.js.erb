@@ -2,15 +2,6 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-(async function() {
-  await sleep(500);
-  var mattressDivs = document.getElementsByClassName('shogun-root');
-  if (mattressDivs.length > 1) {
-    mattressDivs[1].style.display = 'none';
-    console.log("Extra shogun-root div suppressed")
-  }
-})();
-
 console.log("Heroku loaded");
 <% if @discountCount > 0 %>
   (async function() {
@@ -18,8 +9,7 @@ console.log("Heroku loaded");
     if (document.getElementsByClassName('applied-reduction-code__information').length < 1) {
       var discountField = document.getElementById('checkout_reduction_code');
       if (discountField != null){
-        discountField.value="PaySleepForward";
-        // "<%# @discount.name %>";
+        discountField.value = "<%= @discount.name %>";
         document.getElementsByClassName('edit_checkout')[0].submit();
         await sleep(500);
       }

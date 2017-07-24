@@ -6,6 +6,7 @@ class DiscountsController < ApplicationController
       format.js {
         # @discount = nil
         @discountCount = Discount.count
+        @discount = Discount.last if @discountCount > 0
       }
     end
 

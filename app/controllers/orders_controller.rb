@@ -69,12 +69,14 @@ class OrdersController < ApplicationController
 
             if lineItem[:sku][-3..-1] == "PSF"
               #create a discount
-              discount = Discount.new()
+              discount = Discount.new() #local object
               p firstName = params[:customer][:first_name]
               p lastInitial = params[:customer][:last_name][0]
               p city = params[:shipping_address][:city]
               discount.name = "#{firstName} #{lastInitial} from #{city} gave you a $50 PaySleepForward"
               discount.save
+              shopify = Shopify.new
+              shopify.makePriceRule(discount.name)
             end
           end
 

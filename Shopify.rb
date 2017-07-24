@@ -45,35 +45,22 @@ class Shopify
     end
 
     newFulfillment = ShopifyAPI::Fulfillment.new(
-      # status: "open",
-      # line_items: line_items,
       notify_customer: true,
       order_id: order.shopifyID,
-      # receipt: [
-      #   {
-      #     testcase: true,
-      #     authroization: 1
-      #   }
-      # ],
       tracking_company: "FedEx",
       # tracking_numbers: [notice.tracking],
       tracking_number: notice.tracking,
       tracking_urls: [notice.url]
     ).save
-
     #save fullfilment id to local order table
-
     order.fulfillments << newFulfillment
   end
 
 
   def sendShipNotice(order, notice)
     f = ShopifyAPI::Fulfillment.new(order_id: order.shopifyID)
-    # f.line_items = line_items
-    # f.status = "open"
     f.notify_customer = true
     f.tracking_company = "Fedex"
-    # f.tracking_numbers = [notice[:tracking]]
     f.tracking_number = notice[:tracking]
     f.tracking_urls = [notice[:url]]
     f.tracking_url = notice[:url]
@@ -85,11 +72,7 @@ class Shopify
       message = "Shopify Transmission Error"
       zt.sendError(params)
     end
-
     #save fullfilment id to local order table
-
-
-    # shopifyOrder.fulfillments << newFulfillment
   end
 
   def updateFulfillment(notice, order, line_item)
@@ -110,14 +93,9 @@ class Shopify
     end
   end
 
-
-
-  BASE_URL = "https://indigo-sleep.myshopify.com/admin/"
-  def makePriceRule
-    # POST /admin/price_rules.json
-    # orderBody =
+  def makePriceRule(title)
     pr = ShopifyAPI::PriceRule.new
-    pr.title = "?"
+    pr.title = title
     pr.target_type = "line_item"
     pr.target_selection = "all"
     pr.allocation_method = "across"
@@ -127,25 +105,12 @@ class Shopify
     pr.usage_limit = nil
     pr.customer_selection = "all"
     pr.starts_at = "2017-02-01T00:00:00Z"
-
-    p pr.save
-    # pr.prerequisite_subtotal_range = null
-        # )
-    #   }
-    # }
-    # headers = {
-    #   "X-Shopify-Access-Token" => "11290d1d03f2afd3330cd3c07d9a34bc",
-    #   "Host" => "indigo-sleep.myshopify.com",
-    #   "Content-Type" => "application/json"
-    # }
-    #
-    # response = HTTParty.post(
-    #   "#{BASE_URL}price_rules.json",
-    #   headers: headers,
-    #   body: orderBody.to_json
-    # )
-    # puts "discount response"
-    # p response
+    pr.save
+    code = ShopifyAPI::DiscountCode.new
+    code.price_rule_id = pr.id
+    code.code = title
+    code.prefix_options = {"price_rule_id"=>pr.id, "code"=>pr.title}
+    code.save
   end
 
   def applyDiscount(id, line_id)
@@ -173,8 +138,8 @@ class Shopify
 
 end
 
-indigo = Shopify.new
-p indigo.makePriceRule
+# indigo = Shopify.new
+# p indigo.makePriceRule
 # p indigo.applyDiscount("744769fc1aa12c77247bafbc7da03457", 45399384004)
 
 # sh = Shopify.new
