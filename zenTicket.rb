@@ -32,7 +32,7 @@ class ZenTicket
       priority: "urgent",
       status: "new",
       due_at: Time.now.iso8601,
-      description: "#{params}",
+      description: "#{params.to_h}",
       recipient: "customer@test.com",
       assignee_id: "23814189968"
 
@@ -48,7 +48,7 @@ class ZenTicket
       priority: "urgent",
       status: "new",
       due_at: Time.now.iso8601,
-      description: "#{params}",
+      description: "#{params.to_h}",
       recipient: "customer@test.com",
       assignee_id: "23814189968"
 
