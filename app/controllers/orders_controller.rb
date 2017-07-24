@@ -50,7 +50,12 @@ class OrdersController < ApplicationController
         @order = Order.new(filteredOrderParams(orderParams))
 
         if @order.save
-          Discount.destroy_all
+          shopify = Shopify.new
+          if Discount.any?
+            codeToDelete = Discount.last
+            shopify.deleteDiscount(codeToDelete)
+            Discount.destroy_all
+          end
 
           params[:line_items].each do |lineItem|
             @order.line_items.build(
@@ -75,8 +80,8 @@ class OrdersController < ApplicationController
               p city = params[:shipping_address][:city]
               discount.name = "#{firstName} #{lastInitial} from #{city} gave you a $50 PaySleepForward"
               discount.save
-              shopify = Shopify.new
-              shopify.makePriceRule(discount.name)
+
+              shopify.makePriceRule(discount)
             end
           end
 

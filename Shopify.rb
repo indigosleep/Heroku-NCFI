@@ -93,9 +93,9 @@ class Shopify
     end
   end
 
-  def makePriceRule(title)
+  def makePriceRule(discountObj)
     pr = ShopifyAPI::PriceRule.new
-    pr.title = title
+    pr.title = discountObj.name
     pr.target_type = "line_item"
     pr.target_selection = "all"
     pr.allocation_method = "across"
@@ -106,11 +106,20 @@ class Shopify
     pr.customer_selection = "all"
     pr.starts_at = "2017-02-01T00:00:00Z"
     pr.save
+    discountObj.shopifyID = pr.id
+    discountObj.save
     code = ShopifyAPI::DiscountCode.new
     code.price_rule_id = pr.id
-    code.code = title
+    code.code = pr.title
     code.prefix_options = {"price_rule_id"=>pr.id, "code"=>pr.title}
     code.save
+  end
+
+  def deleteDiscount(code)
+    puts "code:"
+    p code
+    codeToDelete = ShopifyAPI::PriceRule.find(code.shopifyID)
+    p codeToDelete.destroy
   end
 
   def applyDiscount(id, line_id)
@@ -139,6 +148,9 @@ class Shopify
 end
 
 # indigo = Shopify.new
+# code = Discount.last
+# indigo.deleteDiscount(code)
+
 # p indigo.makePriceRule
 # p indigo.applyDiscount("744769fc1aa12c77247bafbc7da03457", 45399384004)
 
