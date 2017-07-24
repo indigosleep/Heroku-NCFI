@@ -231,7 +231,6 @@ class OrdersController < ApplicationController
       :source_url,
       :processed_at,
       :device_id,
-      # :phone,
       :browser_ip,
       :landing_site_ref,
       :order_number,
@@ -277,7 +276,6 @@ class OrdersController < ApplicationController
         :province_code,
       ]},
 
-      # {:fulfillments => []},
       {:refunds => []},
       {:customer => [
         :id,
@@ -317,35 +315,7 @@ class OrdersController < ApplicationController
           :default,
         ]}
       ]},
-      # line_item_attributes: [
-      #
-      #   params[:line_items][:id],
-      #   :line_items[:title],
-      #   :line_items[:quantity],
-      #   :line_items[:price],
-      #   :line_items[:sku],
-      #   :line_items[:fulfillment_service],
-      #   :line_items[:product_id],
-      #   :line_items[:name],
-      #   :line_items[:properties],
-      #   :line_items[:fulfillment_status],
-      #
-      # ],
-      #
-      # shipping_address_attributes: [
-      #   :shipping_address["name"],
-      #   :shipping_address["address1"],
-      #   :shipping_address["phone"],
-      #   :shipping_address["city"],
-      #   :shipping_address["zip"],
-      #   :shipping_address["province_code"], #state
-      #   :shipping_address["province"], #state
-      #   :shipping_address["country_code"],
-      #   :shipping_address["address2"],
-      #   :shipping_address["company"],
-      #   :shipping_address["fulfillments"],
-      #   :shipping_address["refunds"],
-      # ],
+
 
     )
   end

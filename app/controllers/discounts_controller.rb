@@ -10,12 +10,6 @@ class DiscountsController < ApplicationController
       }
     end
 
-    #remove last from db
   end
 
-  #get price rule
-  # ShopifyAPI::PriceRule.find(2897674116)
 end
-
-
-# <script src="{{ 'http://sawyermerchant.pagekite.me/api/v1/discounts' }}" ></script>
