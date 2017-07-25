@@ -34,7 +34,8 @@ class ZenTicket
       due_at: Time.now.iso8601,
       description: "#{params[:errors]}",
       recipient: "customer@test.com",
-      assignee_id: "23814189968"
+      # assignee_id: "23814189968"
+      assignee_id: "18605323288"
 
     ).save
   end
@@ -50,7 +51,8 @@ class ZenTicket
       due_at: Time.now.iso8601,
       description: "#{params.to_h}",
       recipient: "customer@test.com",
-      assignee_id: "23814189968"
+      # assignee_id: "23814189968"
+      assignee_id: "18605323288"
 
     ).save
   end
