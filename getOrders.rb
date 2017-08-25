@@ -1,4 +1,4 @@
-# require 'HTTParty'
+require 'HTTParty'
 
 BASE_URL = "https://api.barnhardt.net/v1/order"
 

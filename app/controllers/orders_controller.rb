@@ -100,7 +100,7 @@ class OrdersController < ApplicationController
           ship_notice = @order.shipnotices.build()
           ship_notice.save
           sNoteNum = ship_notice.id
-          # byebug
+
           BarnhardtMessage.new(@order, ackNum, sNoteNum)
           #TODO don't update shopify w/o Barnhardt
           # shopify = Shopify.new
@@ -121,7 +121,6 @@ class OrdersController < ApplicationController
 
 
   private
-
 
   def verify_webhook(data, hmac_header)
     digest  = OpenSSL::Digest::Digest.new('sha256')

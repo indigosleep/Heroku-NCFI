@@ -4,6 +4,14 @@
 # run pagekite with: pagekite.py 3000 sawyermerchant.pagekite.me
 class BarnhardtMessage
   attr_reader :order
+
+  TESTMODE = true
+  if TESTMODE
+    5.times do
+      "%%%%%%TESTMODE%%%%%%%%"
+    end
+  end
+
   BASE_URL = "https://api.barnhardt.net/v1/order"
   # BASE_URL = "https://requestb.in/pja0zbpj"
   HOME_URL = "https://indigosleep.herokuapp.com/api/v1"
@@ -24,9 +32,9 @@ class BarnhardtMessage
     "L-MAT-CK-01": "IND-LU-CK"
   }
 
-  def initialize(shopifyOrder, ackNum, sNoteNum)
-    shipAddress = shopifyOrder.shipping_addresses.last
-    orderBody = makeOrder(shopifyOrder, shipAddress, ackNum, sNoteNum)
+  def initialize(order, ackNum, sNoteNum)
+    shipAddress = order.woo_shipping_addresses.last
+    orderBody = makeOrder(order, shipAddress, ackNum, sNoteNum)
     headers = makeHeaders
     sendMessage(headers, orderBody)
   end
@@ -44,12 +52,16 @@ class BarnhardtMessage
     idString = order.id.to_s
     line_items = []
 
-    order.line_items.each do |li|
-      trimmedIndigoSku = trimSku(li.sku)
-      if BARNHARDT_SKUS.key?(trimmedIndigoSku.to_sym)
+    puts "********************************order.woo_line_items"
+    p order.woo_line_items
+
+    order.woo_line_items.each do |li|
+      # trimmedIndigoSku = trimSku(li.sku)
+      puts "$$$$$$$$$$$$#{li.sku}"
+      if BARNHARDT_SKUS.key?(li.sku.to_sym)
         line_item = {
           "purchase_order_line": li.id.to_s,
-          "note": order.note || "",
+          "note": "",#order.note || "",
           "product_external_id": li.sku,
           "product_id": skuConvert(li.sku),
           "quantity": li.quantity
@@ -58,31 +70,33 @@ class BarnhardtMessage
       end
     end
 
+    customer_edi_id = TESTMODE ? ENV["TEST_BARNHARDT_EDI_ID"] : ENV["BARNHARDT_EDI_ID"]
+
     return {
-      "customer_edi_id": ENV["BARNHARDT_EDI_ID"],
+      "customer_edi_id": customer_edi_id,
       "purchase_order": order.id.to_s,
       "purchase_order_revision": 1,
       "carrier": "FDX",
       "required_date": 6.days.from_now.iso8601,
       "not_before_date": Time.now.iso8601,
-      "note": order.note || "",
+      "note": "",#order.note || "",
       "order_lines": line_items,
       "shipTo": {
-        "address1": shipAddress.address1,
-        "address2": shipAddress.address2 || "",
+        "address1": shipAddress.address_1,
+        "address2": shipAddress.address_2 || "",
         "address3": "",
         "city": shipAddress.city,
         "company": shipAddress.company || "",
-        "country": shipAddress.country_code || "US",
-        "email": order.email || "",
-        "name": shipAddress.name,
-        "phone": shipAddress.phone,
-        "postalCode": shipAddress.zip,
-        "state": shipAddress.province_code
+        "country": shipAddress.country || "US",
+        "email": order.email,
+        "name": "#{shipAddress.first_name} #{shipAddress.last_name}",
+        "phone": order.phone,
+        "postalCode": shipAddress.postcode,
+        "state": shipAddress.state
       },
       "notification_urls": {
-        "order_acknowledgement": "#{HOME_URL}/acknowledgements/#{ackNum}.json",
-        "ship_notice": "#{HOME_URL}/shipnotices/#{sNoteNum}.json"
+        "order_acknowledgement": "#{HOME_URL}/woo_acknowledgements/#{ackNum}.json",
+        "ship_notice": "#{HOME_URL}/woo_shipnotices/#{sNoteNum}.json"
 
       }
     }

@@ -11,6 +11,8 @@ gem 'httparty'
 
 gem "zendesk_api"
 
+gem "woocommerce_api"
+
 # for shopify token verification
 gem 'openssl'
 
@@ -62,3 +64,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 
 ruby "2.3.0"
+
+# https://github.com/guard/listen/issues/431
+gem "rb-fsevent", "0.9.8"

@@ -13,6 +13,10 @@ Rails.application.routes.draw do
       resources :acknowledgements
       resources :shipnotices
       resources :discounts, only: [:index]
+      resources :orders, only: [:create]
+      resources :woo_acknowledgements
+      resources :woo_shipnotices
+      resources :woo_orders, only: [:create]
     end
   end
 
