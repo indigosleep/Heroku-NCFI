@@ -10,6 +10,7 @@ class BarnhardtMessage
     5.times do
       "%%%%%%TESTMODE%%%%%%%%"
     end
+  end
 
   BASE_URL = "https://api.barnhardt.net/v1/order"
   # BASE_URL = "https://requestb.in/pja0zbpj"
