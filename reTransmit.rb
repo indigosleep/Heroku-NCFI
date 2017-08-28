@@ -1,6 +1,6 @@
 require_relative './BarnhardtMessageShopify'
 
-orderID = 2508
+orderID = 2507
 
 order = Order.find(orderID)
 

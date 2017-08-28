@@ -13,7 +13,7 @@ BASE_URL,
 headers: headers
 )
 
-orders
+p orders
 
-# puts "number of orders"
-# p orders.length
+puts "number of orders"
+p orders.length
