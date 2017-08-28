@@ -1,4 +1,4 @@
-require_relative '../../BarnhardtMessage'
+require_relative '../../BarnhardtMessageWoo'
 
 class WooOrdersController < ApplicationController
   before_action :parse_params

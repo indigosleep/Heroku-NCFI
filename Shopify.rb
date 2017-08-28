@@ -127,7 +127,12 @@ class Shopify
     # url = "#{API_URL_BASE}carts/#{id}.json"
     cart.line_items.first.discounts << "John S From Tampa Gave a $50 pay-it-forward toward your purchase"
     cart.save
+  end
 
+  def getExistingOrder(id)
+    p order = ShopifyAPI::Order.last
   end
 
 end
+
+# s = Shopify.new

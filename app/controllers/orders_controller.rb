@@ -1,7 +1,6 @@
 require 'shopify_api'
 require 'base64'
-# require 'HTTParty'
-require_relative '../../BarnhardtMessage'
+require_relative '../../BarnhardtMessageShopify'
 require_relative '../../Shopify'
 
 SHOPIFY_API_KEY = ENV["SHOPIFY_API_KEY"]
