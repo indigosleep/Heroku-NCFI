@@ -100,7 +100,7 @@ class OrdersController < ApplicationController
           ship_notice.save
           sNoteNum = ship_notice.id
 
-          BarnhardtMessage.new(@order, ackNum, sNoteNum)
+          BarnhardtMessageShopify.new(@order, ackNum, sNoteNum)
           #TODO don't update shopify w/o Barnhardt
           # shopify = Shopify.new
           # shopify.makeFulfillment(@order)
