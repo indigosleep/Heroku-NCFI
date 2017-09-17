@@ -8,10 +8,10 @@
 
 ORDER_COUNT = 5
 
-if Rails.env == "development"
-  puts "Reset Database"
-  Rake::Task['db:migrate:reset'].invoke
-end
+# if Rails.env == "development"
+#   puts "Reset Database"
+#   Rake::Task['db:migrate:reset'].invoke
+# end
 
 # puts "Createing Orders"
 # ORDER_COUNT.times do
@@ -21,3 +21,4 @@ end
 # end
 
 # p Order.all
+AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?

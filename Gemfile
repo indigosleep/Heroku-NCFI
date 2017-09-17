@@ -68,3 +68,8 @@ ruby "2.3.0"
 
 # https://github.com/guard/listen/issues/431
 gem "rb-fsevent", "0.9.8"
+
+# ActiveAdmin
+gem 'devise', '> 4.x'
+gem 'activeadmin', github: 'activeadmin'
+gem 'inherited_resources', git: 'https://github.com/activeadmin/inherited_resources'
