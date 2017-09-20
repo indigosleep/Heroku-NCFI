@@ -1,15 +1,11 @@
 
 class BarnhardtMessageWoo
   attr_reader :order
-  before_action :putTestMode
 
   TESTMODE = true
-
-  def putTestMode
-    if TESTMODE
-      5.times do
-        "%%%%%%TESTMODE%%%%%%%%"
-      end
+  if TESTMODE
+    5.times do
+      "%%%%%%TESTMODE%%%%%%%%"
     end
   end
 
