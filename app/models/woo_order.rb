@@ -6,7 +6,7 @@ class WooOrder < ApplicationRecord
 
   has_many :woo_shipping_addresses
 
-  has_many :fulfillments
+  # has_many :fulfillments
   # accepts_nested_attributes_for :fulfillments
 
   has_many :woo_acknowledgements
