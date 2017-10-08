@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170917234020) do
+ActiveRecord::Schema.define(version: 20171007233119) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -263,6 +263,8 @@ ActiveRecord::Schema.define(version: 20170917234020) do
     t.datetime "updated_at",           null: false
     t.string   "phone"
     t.string   "email"
+    t.jsonb    "barnhardt_reply"
+    t.index ["barnhardt_reply"], name: "index_woo_orders_on_barnhardt_reply", using: :gin
     t.index ["billing"], name: "index_woo_orders_on_billing", using: :gin
     t.index ["coupon_lines"], name: "index_woo_orders_on_coupon_lines", using: :gin
     t.index ["fee_lines"], name: "index_woo_orders_on_fee_lines", using: :gin

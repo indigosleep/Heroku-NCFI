@@ -13,21 +13,17 @@ class WooOrder < ApplicationRecord
   has_many :woo_shipnotices
 
 
-
-
   after_create #:make_shipping_address, :transmit_to_barnhardt
 
-
-
-  # after_initialize do |order|
-  #   woocommerce = WooCommerce::API.new(
-  #   "http://example.com",
-  #     "#{ENV['WOO_CONSUMER_KEY']}",
-  #     "#{ENV['WOO_CONSUMER_SECRET']}",
-  #     {
-  #       wp_api: true,
-  #       version: "wc/v1"
-  #     }
-  #   )
-  # end
+  after_initialize do |order|
+    woocommerce = WooCommerce::API.new(
+    "http://indigosleep.com",
+      "#{ENV['WOO_CONSUMER_KEY']}",
+      "#{ENV['WOO_CONSUMER_SECRET']}",
+      {
+        wp_api: true,
+        version: "wc/v1"
+      }
+    )
+  end
 end

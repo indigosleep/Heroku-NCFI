@@ -33,7 +33,7 @@ class BarnhardtMessageWoo
     shipAddress = order.woo_shipping_addresses.last
     orderBody = makeOrder(order, shipAddress, ackNum, sNoteNum)
     headers = makeHeaders
-    sendMessage(headers, orderBody)
+    sendMessage(headers, orderBody, order)
   end
 
   def trimSku(indigoSku)
@@ -106,7 +106,7 @@ class BarnhardtMessageWoo
     }
   end
 
-  def sendMessage(headers, orderBody)
+  def sendMessage(headers, orderBody, order)
     puts "To Barnhardt"
     p orderBody
     response = HTTParty.post(
@@ -118,6 +118,8 @@ class BarnhardtMessageWoo
     puts "BarnhardtMessageResponse!!!!!!!!!!!!!!"
     p response
 
+    order.barnhardt_reply = response
+    order.save
   end
 
 
