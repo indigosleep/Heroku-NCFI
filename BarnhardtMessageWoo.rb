@@ -2,7 +2,7 @@
 class BarnhardtMessageWoo
   attr_reader :order
 
-  TESTMODE = false
+  TESTMODE = true
   if TESTMODE
     5.times do
       "%%%%%%TESTMODE%%%%%%%%"
