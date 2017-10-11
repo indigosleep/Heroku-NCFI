@@ -17,7 +17,7 @@ class WooOrdersController < ApplicationController
           puts "Pillow"
         else
           puts "@@@@@@@@@@@@@Building line_items@@@@@@@"
-          sku = buildSku(lineItem[:meta_data])
+          sku = lineItem[:sku]
           @wooOrder.woo_line_items.build(
             wooID: lineItem[:id],
             name: lineItem[:name],
@@ -129,16 +129,16 @@ class WooOrdersController < ApplicationController
   end
 
 
-  def buildSku(meta_data)
-    sku = ""
-    sku += meta_data[0][:value][0].capitalize
-    sku += "-MAT-"
-    size = getSize(meta_data[1][:value])
-    sku += size
-    sku += "-01"
-    puts "sku is #{sku} %%%%%%%%%%%%%%%%%%%%%"
-    sku
-  end
+  # def buildSku(meta_data)
+  #   sku = ""
+  #   sku += meta_data[0][:value][0].capitalize
+  #   sku += "-MAT-"
+  #   size = getSize(meta_data[1][:value])
+  #   sku += size
+  #   sku += "-01"
+  #   puts "sku is #{sku} %%%%%%%%%%%%%%%%%%%%%"
+  #   sku
+  # end
 
   def parse_params
     @body = JSON.parse request.body.read
