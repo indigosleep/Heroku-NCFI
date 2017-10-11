@@ -2,7 +2,7 @@
 class BarnhardtMessageWoo
   attr_reader :order
 
-  TESTMODE = true
+  TESTMODE = false
   if TESTMODE
     5.times do
       "%%%%%%TESTMODE%%%%%%%%"
@@ -110,14 +110,16 @@ class BarnhardtMessageWoo
     puts "To Barnhardt"
     p orderBody
     response = HTTParty.post(
-    BASE_URL,
-    headers: headers,
-    body: orderBody.to_json
+      BASE_URL,
+      headers: headers,
+      body: orderBody.to_json
     )
 
     puts "BarnhardtMessageResponse!!!!!!!!!!!!!!"
     p response
 
+
+    #TODO properly parse to save Success or Failure
     order.barnhardt_reply = response
     order.save
   end
