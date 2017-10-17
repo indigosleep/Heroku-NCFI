@@ -24,6 +24,7 @@ ActiveAdmin.register WooOrder, as: "Orders" do
     column "Shipping" do |order|
       if !!order.woo_shipnotices.first
         order.woo_shipnotices.first.barnhardt_tracking.url
+      end
     end
 
   end
