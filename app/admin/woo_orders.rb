@@ -1,9 +1,31 @@
 ActiveAdmin.register WooOrder, as: "Orders" do
   includes :woo_acknowledgements, :woo_line_items, :woo_shipping_addresses, :woo_shipnotices
 
-  # index do
-  #
-  # end
+  index do
+    selectable_column
+    column "WooID" do |order|
+      link_to order.number, admin_order_path(order)
+    end
+    column "PO" do |order|
+      link_to order.id, admin_order_path(order)
+    end
+    column "Date", :date_created
+    column "Discount", :discount_total, sortable: false
+    column :total
+    column :status, sortable: false
+    column "Method", :payment_method, sortable: false
+    # column "Paid on", :date_paid
+    # column "Line Items" do |li|
+    #   link_to li.id, admin_line_item(li)
+    # end
+    column "Via", :created_via
+    column :phone, sortable: false
+    column :email, sortable: false
+    column "Shipping" do |order|
+      order.woo_shipnotices.first.barnhardt_tracking if !!order.woo_shipnotices.first
+    end
+
+  end
 
 
   show do

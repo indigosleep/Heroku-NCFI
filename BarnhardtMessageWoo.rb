@@ -26,7 +26,9 @@ class BarnhardtMessageWoo
     "L-MAT-FL-01": "IND-LU-FU",
     "L-MAT-QU-01": "IND-LU-QU",
     "L-MAT-KG-01": "IND-LU-KG",
-    "L-MAT-CK-01": "IND-LU-CK"
+    "L-MAT-CK-01": "IND-LU-CK",
+
+    "C-TOP-TX-01": "IND-CL-CVRTPTXL"
   }
 
   def initialize(order, ackNum, sNoteNum)
