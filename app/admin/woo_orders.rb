@@ -23,7 +23,7 @@ ActiveAdmin.register WooOrder, as: "Orders" do
     column :email, sortable: false
     column "Shipping" do |order|
       if !!order.woo_shipnotices.first
-        order.woo_shipnotices.first.barnhardt_tracking.url
+        order.woo_shipnotices.first.barnhardt_tracking
       end
     end
 
