@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171011234023) do
+ActiveRecord::Schema.define(version: 20171018090136) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -279,9 +279,10 @@ ActiveRecord::Schema.define(version: 20171011234023) do
   create_table "woo_shipnotices", force: :cascade do |t|
     t.integer  "woo_order_id"
     t.string   "purchase_order_line"
-    t.text     "barnhardt_tracking"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.jsonb    "barnhardt_tracking",  default: {}
+    t.index ["barnhardt_tracking"], name: "index_woo_shipnotices_on_barnhardt_tracking", using: :gin
     t.index ["woo_order_id"], name: "index_woo_shipnotices_on_woo_order_id", using: :btree
   end
 
