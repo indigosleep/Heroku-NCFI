@@ -1,5 +1,4 @@
-
-class BarnhardtMessageWoo
+class BarnhardtMessageWooService
   attr_reader :order
 
   TESTMODE = Rails.env.development? || Rails.env.test?
@@ -139,7 +138,4 @@ class BarnhardtMessageWoo
     order.save
     response
   end
-
-
-
 end

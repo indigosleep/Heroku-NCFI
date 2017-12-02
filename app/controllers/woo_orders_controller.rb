@@ -53,7 +53,7 @@ class WooOrdersController < ApplicationController
       ship_notice.save
       sNoteNum = ship_notice.id
 
-      BarnhardtMessageWoo.new(@wooOrder, ackNum, sNoteNum)
+      BarnhardtMessageWooService.call(@wooOrder, ackNum, sNoteNum)
 
       respond_to do |format|
         format.json { render json: @wooOrder.to_json, status: 201 }
