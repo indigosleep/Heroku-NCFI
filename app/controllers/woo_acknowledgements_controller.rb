@@ -1,4 +1,3 @@
-require_relative '../../zenTicket'
 class WooAcknowledgementsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
@@ -15,14 +14,14 @@ class WooAcknowledgementsController < ApplicationController
       )
 
         if params[:errors].length > 0
-          zt = ::ZenTicket.new
+          zt = ZenTicketService.new
           zt.sendBarnhardtError(params)
         end
 
         format.json { render json: @ack.to_json, status: 201 }
       else
 
-        zt = ::ZenTicket.new
+        zt = ZenTicketService.new
         message = "Acknowledgement Error"
         zt.sendError(message, params)
 

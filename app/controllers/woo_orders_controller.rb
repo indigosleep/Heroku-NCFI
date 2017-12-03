@@ -1,5 +1,4 @@
 
-
 class WooOrdersController < ApplicationController
   before_action :parse_params
 
@@ -65,8 +64,19 @@ class WooOrdersController < ApplicationController
     end
   end
 
-  def update
-
+  def update_order
+    @filtered_params =  filtered_order_params(order_params)
+    @wooOrder = WooOrder.find_by('wooID', @filtered_params[:wooID])
+    if @wooOrder && @wooOrder.update(@filtered_params)
+      BarnhardtMessageWooService.call(@wooOrder, @wooOrder.woo_acknowledgements.first, @wooOrder.woo_shipnotices.first)
+      respond_to do |format|
+        format.json { render json: @wooOrder.to_json, status: 201 }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
+      end
+    end
   end
 
 
@@ -144,13 +154,18 @@ class WooOrdersController < ApplicationController
   # end
 
   def parse_params
+    return true
     @body = JSON.parse request.body.read
   end
 
   def filtered_order_params(orderParams)
     filteredParams = {}
     orderParams.each do |key, value|
+     if key == "id"
+        filteredParams[:wooID] = value
+      else
         filteredParams[key] = value
+      end
     end
     filteredParams[:phone] = params[:billing][:phone]
     filteredParams[:email] = params[:billing][:email]
@@ -160,6 +175,7 @@ class WooOrdersController < ApplicationController
 
   def order_params
     params.permit(
+      :id,
       :wooID,
       :number,
       :parent_id,
