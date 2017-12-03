@@ -4,7 +4,7 @@ class WooShipnoticesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def update
-    # byebug
+    byebug
     @shipNote = WooShipnotice.find_by_id(params[:id].to_i)
     @order = WooOrder.find_by_id(params[:purchase_order])
     @line_item = WooLineItem.find_by_id(params[:purchase_order_line])

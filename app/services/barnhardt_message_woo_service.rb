@@ -3,15 +3,12 @@ class BarnhardtMessageWooService
 
   TESTMODE = Rails.env.development? || Rails.env.test?
   if TESTMODE
-    5.times do
-      "%%%%%%TESTMODE%%%%%%%%"
-    end
+    HOME_URL = 'https://calebbourg.pagekite.me//api/v1'
+  else
+    HOME_URL =  "https://indigosleep.herokuapp.com/api/v1"
   end
   IMMEDIATE_PROCESS_STATUSES = ['on-hold', 'processing']
   BASE_URL = "https://api.barnhardt.net/v1/order"
-  # BASE_URL = "https://requestb.in/pja0zbpj"
-  HOME_URL = "https://indigosleep.herokuapp.com/api/v1"
-  # HOME_URL = "https://sawyermerchant.pagekite.me/api/v1"
   BARNHARDT_SKUS = {
     "C-MAT-TW-01": "IND-CL-TW",
     "C-MAT-TX-01": "IND-CL-TL",
@@ -31,19 +28,19 @@ class BarnhardtMessageWooService
   }
 
   def initialize(order, ackNum, sNoteNum)
+    @order = order
     shipAddress = order.woo_shipping_addresses.last
-    orderBody = makeOrder(order, shipAddress, ackNum, sNoteNum)
-    headers = makeHeaders
-
+    @orderBody = makeOrder(order, shipAddress, ackNum, sNoteNum)
+    @headers = makeHeaders
   end
 
   def self.call(order, ackNum, sNoteNum)
-    new(order, ackNum, sNoteNum)
+    new(order, ackNum, sNoteNum).call
   end
 
   def call
-    if IMMEDIATE_PROCESS_STATUSES.include(order.status)
-      result = sendMessage(headers, orderBody, order)
+    if IMMEDIATE_PROCESS_STATUSES.include?(order.status)
+      result = sendMessage(@headers, @orderBody, order)
     else
       result = 'order not sent'
     end

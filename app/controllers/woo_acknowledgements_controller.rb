@@ -15,14 +15,14 @@ class WooAcknowledgementsController < ApplicationController
       )
 
         if params[:errors].length > 0
-          zt = ZenTicket.new
+          zt = ::ZenTicket.new
           zt.sendBarnhardtError(params)
         end
 
         format.json { render json: @ack.to_json, status: 201 }
       else
 
-        zt = ZenTicket.new
+        zt = ::ZenTicket.new
         message = "Acknowledgement Error"
         zt.sendError(message, params)
 

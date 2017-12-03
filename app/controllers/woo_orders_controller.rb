@@ -1,4 +1,4 @@
-require_relative '../../BarnhardtMessageWoo'
+
 
 class WooOrdersController < ApplicationController
   before_action :parse_params
@@ -52,9 +52,8 @@ class WooOrdersController < ApplicationController
       ship_notice = @wooOrder.woo_shipnotices.build()
       ship_notice.save
       sNoteNum = ship_notice.id
-
       BarnhardtMessageWooService.call(@wooOrder, ackNum, sNoteNum)
-
+      
       respond_to do |format|
         format.json { render json: @wooOrder.to_json, status: 201 }
       end
@@ -64,6 +63,10 @@ class WooOrdersController < ApplicationController
         format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
       end
     end
+  end
+
+  def update
+
   end
 
 
@@ -147,11 +150,7 @@ class WooOrdersController < ApplicationController
   def filtered_order_params(orderParams)
     filteredParams = {}
     orderParams.each do |key, value|
-      if key == "id"
-        filteredParams[:wooID] = value
-      else
         filteredParams[key] = value
-      end
     end
     filteredParams[:phone] = params[:billing][:phone]
     filteredParams[:email] = params[:billing][:email]

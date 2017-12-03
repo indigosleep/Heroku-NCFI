@@ -18,7 +18,7 @@ Rails.application.routes.draw do
       resources :orders, only: [:create]
       resources :woo_acknowledgements
       resources :woo_shipnotices
-      resources :woo_orders, only: [:create]
+      resources :woo_orders, only: [:create, :update]
     end
   end
 
