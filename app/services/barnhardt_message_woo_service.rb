@@ -27,15 +27,17 @@ class BarnhardtMessageWooService
     "C-TOP-TX-01": "IND-CL-CVRTPTXL"
   }
 
-  def initialize(order, ackNum, sNoteNum)
+  def initialize(order)
     @order = order
+    @ackNum = order.woo_acknowledgements.first.id
+    @sNoteNum = order.woo_shipnotices.first.id
     shipAddress = order.woo_shipping_addresses.last
-    @orderBody = makeOrder(order, shipAddress, ackNum, sNoteNum)
+    @orderBody = makeOrder(order, shipAddress, @ackNum, @sNoteNum)
     @headers = makeHeaders
   end
 
-  def self.call(order, ackNum, sNoteNum)
-    new(order, ackNum, sNoteNum).call
+  def self.call(order)
+    new(order).call
   end
 
   def call

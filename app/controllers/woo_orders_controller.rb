@@ -46,12 +46,10 @@ class WooOrdersController < ApplicationController
 
       ack = @wooOrder.woo_acknowledgements.build()
       ack.save
-      ackNum = ack.id
 
       ship_notice = @wooOrder.woo_shipnotices.build()
       ship_notice.save
-      sNoteNum = ship_notice.id
-      BarnhardtMessageWooService.call(@wooOrder, ackNum, sNoteNum)
+      BarnhardtMessageWooService.call(@wooOrder)
       
       respond_to do |format|
         format.json { render json: @wooOrder.to_json, status: 201 }
@@ -66,15 +64,21 @@ class WooOrdersController < ApplicationController
 
   def update_order
     @filtered_params =  filtered_order_params(order_params)
-    @wooOrder = WooOrder.find_by('wooID', @filtered_params[:wooID])
-    if @wooOrder && @wooOrder.update(@filtered_params)
-      BarnhardtMessageWooService.call(@wooOrder, @wooOrder.woo_acknowledgements.first, @wooOrder.woo_shipnotices.first)
-      respond_to do |format|
-        format.json { render json: @wooOrder.to_json, status: 201 }
+    @wooOrder = WooOrder.find_by(woo_id: @filtered_params[:woo_id])
+    if @wooOrder 
+      if @wooOrder.update(@filtered_params)
+        BarnhardtMessageWooService.call(@wooOrder)
+        respond_to do |format|
+          format.json { render json: @wooOrder.to_json, status: 201 }
+        end
+      else
+        respond_to do |format|
+          format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
+        end
       end
     else
       respond_to do |format|
-        format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
+        format.json { render status: 500 }
       end
     end
   end
@@ -162,7 +166,7 @@ class WooOrdersController < ApplicationController
     filteredParams = {}
     orderParams.each do |key, value|
      if key == "id"
-        filteredParams[:wooID] = value
+        filteredParams[:woo_id] = value
       else
         filteredParams[key] = value
       end
@@ -176,7 +180,7 @@ class WooOrdersController < ApplicationController
   def order_params
     params.permit(
       :id,
-      :wooID,
+      :woo_id,
       :number,
       :parent_id,
       :order_key,

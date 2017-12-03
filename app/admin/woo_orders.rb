@@ -3,7 +3,7 @@ ActiveAdmin.register WooOrder, as: "Orders" do
 
   index do
     selectable_column
-    column "WooID" do |order|
+    column "woo_id" do |order|
       link_to order.number, admin_order_path(order)
     end
     column "PO" do |order|
