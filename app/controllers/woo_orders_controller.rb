@@ -63,24 +63,27 @@ class WooOrdersController < ApplicationController
   end
 
   def update_order
-    @filtered_params =  filtered_order_params(order_params)
-    @wooOrder = WooOrder.find_by(woo_id: @filtered_params[:woo_id])
-    if @wooOrder 
-      if @wooOrder.update(@filtered_params)
-        BarnhardtMessageWooService.call(@wooOrder)
-        respond_to do |format|
-          format.json { render json: @wooOrder.to_json, status: 201 }
-        end
-      else
-        respond_to do |format|
-          format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
-        end
-      end
-    else
-      respond_to do |format|
-        format.json { render status: 500 }
-      end
+    respond_to do |format|
+      format.json { render status: 200 }
     end
+    # @filtered_params =  filtered_order_params(order_params)
+    # @wooOrder = WooOrder.find_by(woo_id: @filtered_params[:woo_id])
+    # if @wooOrder 
+    #   if @wooOrder.update(@filtered_params)
+    #     BarnhardtMessageWooService.call(@wooOrder)
+    #     respond_to do |format|
+    #       format.json { render json: @wooOrder.to_json, status: 201 }
+    #     end
+    #   else
+    #     respond_to do |format|
+    #       format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
+    #     end
+    #   end
+    # else
+    #   respond_to do |format|
+    #     format.json { render status: 500 }
+    #   end
+    # end
   end
 
 
