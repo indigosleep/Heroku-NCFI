@@ -48,7 +48,7 @@ class BarnhardtMessageWooService
     end
     result
   end
-
+  
   def trimSku(indigoSku)
     indigoSku[0..10]
   end
