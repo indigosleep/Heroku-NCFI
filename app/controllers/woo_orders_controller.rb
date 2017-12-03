@@ -64,9 +64,9 @@ class WooOrdersController < ApplicationController
 
   def update_order
     respond_to do |format|
-      format.json { render status: :ok }
+      format.json { render status: 200, json: WooOrder.first.to_json }
     end
-    
+
     # @filtered_params =  filtered_order_params(order_params)
     # @wooOrder = WooOrder.find_by(woo_id: @filtered_params[:woo_id])
     # if @wooOrder 
