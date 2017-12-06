@@ -13,12 +13,12 @@ class UpdateWooOrderService
     )
   end
 
-  def self.call
-  	new().call
+  def self.call(woo_order)
+  	new(woo_order).call
   end
 
   def call
-  	@client.put("orders/#{@woo_order.wooID}", @woo_order.to_json)
-
+  	response = @client.put("orders/#{@woo_order.woo_id}", { status: 'completed' } )
+    return response
   end
 end

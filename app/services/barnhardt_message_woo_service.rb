@@ -3,7 +3,7 @@ class BarnhardtMessageWooService
 
   TESTMODE = Rails.env.development? || Rails.env.test?
   if TESTMODE
-    HOME_URL = 'https://calebbourg.pagekite.me//api/v1'
+    HOME_URL = 'https://calebbourg.pagekite.me/api/v1'
   else
     HOME_URL =  "https://indigosleep.herokuapp.com/api/v1"
   end

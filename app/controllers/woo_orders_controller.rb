@@ -7,10 +7,7 @@ class WooOrdersController < ApplicationController
     return if filter_pending_status
     if @wooOrder.save
      @wooOrder = WooOrderService.call(params, @wooOrder)
-      ack = @wooOrder.woo_acknowledgements.build()
-      ack.save
-      ship_notice = @wooOrder.woo_shipnotices.build()
-      ship_notice.save
+      create_acknowledgement_shipnotice
       BarnhardtMessageWooService.call(@wooOrder)
       
       respond_to do |format|
@@ -30,10 +27,7 @@ class WooOrdersController < ApplicationController
     if @wooOrder.new_record?
       @wooOrder = WooOrderService.call(params, @wooOrder)
       if @wooOrder.save
-        ack = @wooOrder.woo_acknowledgements.build()
-        ack.save
-        ship_notice = @wooOrder.woo_shipnotices.build()
-        ship_notice.save
+        create_acknowledgement_shipnotice
         BarnhardtMessageWooService.call(@wooOrder)
         respond_with_201
         return
@@ -53,23 +47,6 @@ class WooOrdersController < ApplicationController
 
   private
 
-  # def filteredAddressParams(addressParams)
-  #   filteredParams = {}
-  #   addressParams.each do |key, value|
-  #     if key == "address_1"
-  #       filteredParams[:address1] = value
-  #     elsif key == "address_2"
-  #       filteredParams[:address2] = value
-  #     elsif key == "city"
-  #       filteredParams[:province] = value
-  #     elsif key == "postcode"
-  #       filteredParams[:zip] = value
-  #     else
-  #       filteredParams[:key] = value
-  #     end
-  #   end
-  #   filteredParams
-  # end
   def filter_pending_status
     if filtered_order_params(order_params)['status'] == 'pending'
       respond_to do |format|
@@ -93,31 +70,12 @@ class WooOrdersController < ApplicationController
     end
   end
 
-
-  # SIZES = {
-  #   "twin":             "TW",
-  #   "twin-xl":          "TX",
-  #   "full":             "FL",
-  #   "queen":            "QU",
-  #   "king":             "KG",
-  #   "california-king":  "CK"
-  # }
-
-  # def getSize(size)
-  #   SIZES[size.to_sym]
-  # end
-
-
-  # def buildSku(meta_data)
-  #   sku = ""
-  #   sku += meta_data[0][:value][0].capitalize
-  #   sku += "-MAT-"
-  #   size = getSize(meta_data[1][:value])
-  #   sku += size
-  #   sku += "-01"
-  #   puts "sku is #{sku} %%%%%%%%%%%%%%%%%%%%%"
-  #   sku
-  # end
+  def create_acknowledgement_shipnotice
+    ack = @wooOrder.woo_acknowledgements.build()
+    ack.save
+    ship_notice = @wooOrder.woo_shipnotices.build()
+    ship_notice.save
+  end
 
   def parse_params
     @body = JSON.parse request.body.read
