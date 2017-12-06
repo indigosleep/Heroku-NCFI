@@ -19,7 +19,7 @@ class UpdateWooOrderService
   end
 
   def call
-  	response = @client.put("orders/#{@woo_order.woo_id}", { status: 'completed' } )
+  	response = @client.put("orders/#{@woo_order.woo_id}", { order: { status: 'completed' } } )
     return response
   end
 end
