@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171203162053) do
+ActiveRecord::Schema.define(version: 20171206001500) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -218,7 +218,7 @@ ActiveRecord::Schema.define(version: 20171203162053) do
   end
 
   create_table "woo_orders", force: :cascade do |t|
-    t.bigint   "woo_id"
+    t.bigint   "wooID"
     t.bigint   "number"
     t.bigint   "parent_id"
     t.string   "order_key"
@@ -264,6 +264,7 @@ ActiveRecord::Schema.define(version: 20171203162053) do
     t.string   "phone"
     t.string   "email"
     t.jsonb    "barnhardt_reply"
+    t.bigint   "woo_id"
     t.index ["barnhardt_reply"], name: "index_woo_orders_on_barnhardt_reply", using: :gin
     t.index ["billing"], name: "index_woo_orders_on_billing", using: :gin
     t.index ["coupon_lines"], name: "index_woo_orders_on_coupon_lines", using: :gin
@@ -274,6 +275,7 @@ ActiveRecord::Schema.define(version: 20171203162053) do
     t.index ["shipping"], name: "index_woo_orders_on_shipping", using: :gin
     t.index ["shipping_lines"], name: "index_woo_orders_on_shipping_lines", using: :gin
     t.index ["tax_lines"], name: "index_woo_orders_on_tax_lines", using: :gin
+    t.index ["woo_id"], name: "index_woo_orders_on_woo_id", unique: true, using: :btree
   end
 
   create_table "woo_shipnotices", force: :cascade do |t|
