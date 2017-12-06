@@ -4,7 +4,7 @@ class WooOrdersController < ApplicationController
 
   def create
     @wooOrder = WooOrder.new(filtered_order_params(order_params))
-    return if filter_pending_status
+    return if filter_pending_on_hold_status
     if @wooOrder.save
      @wooOrder = WooOrderService.call(params, @wooOrder)
       create_acknowledgement_shipnotice
@@ -46,9 +46,9 @@ class WooOrdersController < ApplicationController
   end
 
   private
-
-  def filter_pending_status
-    if filtered_order_params(order_params)['status'] == 'pending'
+  # we don't want to create oder records with pending or on-hold statuses
+  def filter_pending_on_hold_status
+    if filtered_order_params(order_params)['status'] == 'pending' || filtered_order_params(order_params)['status'] == 'on-hold'
       respond_to do |format|
         format.json { render json: @wooOrder.to_json, status: 422 }
       end 

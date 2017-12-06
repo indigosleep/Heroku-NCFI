@@ -7,7 +7,7 @@ class BarnhardtMessageWooService
   else
     HOME_URL =  "https://indigosleep.herokuapp.com/api/v1"
   end
-  IMMEDIATE_PROCESS_STATUSES = ['on-hold', 'processing']
+  IMMEDIATE_PROCESS_STATUSES = ['processing']
   BASE_URL = "https://api.barnhardt.net/v1/order"
   BARNHARDT_SKUS = {
     "C-MAT-TW-01": "IND-CL-TW",
