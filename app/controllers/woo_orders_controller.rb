@@ -6,7 +6,7 @@ class WooOrdersController < ApplicationController
     @wooOrder = WooOrder.new(filtered_order_params(order_params))
     return if filter_pending_on_hold_status
     if @wooOrder.save
-     @wooOrder = WooOrderService.call(filtered_order_params(order_params), @wooOrder)
+     @wooOrder = WooOrderService.call(params, @wooOrder)
       create_acknowledgement_shipnotice
       BarnhardtMessageWooService.call(@wooOrder)
       
@@ -26,8 +26,9 @@ class WooOrdersController < ApplicationController
 
     @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
     if @wooOrder.new_record?
-      @wooOrder = WooOrderService.call(@filtered_params, @wooOrder)
+      @wooOrder = WooOrderService.call(params, @wooOrder)
       if @wooOrder.save
+         @wooOrder.update(@filtered_params)
         create_acknowledgement_shipnotice
         BarnhardtMessageWooService.call(@wooOrder)
         respond_with_201

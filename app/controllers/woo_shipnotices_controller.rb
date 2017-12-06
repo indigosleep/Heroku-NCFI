@@ -6,13 +6,12 @@ class WooShipnoticesController < ApplicationController
     @shipNote = WooShipnotice.find_by_id(params[:id].to_i)
     @woo_id = @shipNote.woo_order.id
     respond_to do |format|
-      
       if params[:tracking]  && @shipNote.update(
-        purchase_order_line: params[:purchase_order_line],
-        barnhardt_tracking: params[:tracking]
+        purchase_order_line: params[:tracking].first[:purchase_order_line],
+        barnhardt_tracking: params[:tracking].first[:tracking]
       )
         order_response = UpdateWooOrderService.call(@woo_id)
-        ship_response = UpdateWooShippingService.call(@woo_id, params[:tracking])
+        ship_response = UpdateWooShippingService.call(@woo_id, params[:tracking].first)
         format.json { render json: @shipNote.to_json, status: 201 }
       else
         zt = ZenTicketService.new
