@@ -11,7 +11,7 @@ class WooShipnoticesController < ApplicationController
         purchase_order_line: params[:purchase_order_line],
         barnhardt_tracking: params[:tracking]
       )
-        UpdateWooOrderService.call(@shipnote.woo_order)
+        # UpdateWooOrderService.call(@shipnote.woo_order)
         format.json { render json: @shipNote.to_json, status: 201 }
       else
         zt = ZenTicketService.new

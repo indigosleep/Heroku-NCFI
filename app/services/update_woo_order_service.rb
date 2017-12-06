@@ -19,7 +19,8 @@ class UpdateWooOrderService
   end
 
   def call
-  	response = @client.put("orders/#{@woo_order.woo_id}", { order: { status: 'completed' } } )
+    data = (@woo_order.payment_method == "klarna_payments") ? { order: { status: 'processing' } } : { order: { status: 'completed' } } 
+  	response = @client.put("orders/#{@woo_order.woo_id}", data )
     return response
   end
 end
