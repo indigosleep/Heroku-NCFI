@@ -4,49 +4,11 @@ class WooOrdersController < ApplicationController
 
   def create
     @wooOrder = WooOrder.new(filtered_order_params(order_params))
+    return if filter_pending_status
     if @wooOrder.save
-
-      # params[:line_items].each do |li|
-      #   puts "line itmem %%%%%%%%%%%%%%%%%%"
-      #   p li
-      # end
-
-      params[:line_items].each do |lineItem|
-        if lineItem[:name].include? "Pillow"
-          puts "Pillow"
-        else
-          puts "@@@@@@@@@@@@@Building line_items@@@@@@@"
-          sku = lineItem[:sku]
-          @wooOrder.woo_line_items.build(
-            wooID: lineItem[:id],
-            name: lineItem[:name],
-            product_id: lineItem[:product_id],
-            variation_id: lineItem[:variation_id],
-            quantity: lineItem[:quantity],
-            tax_class: lineItem[:tax_class],
-            subtotal: lineItem[:subtotal],
-            subtotal_tax: lineItem[:subtotal_tax],
-            total: lineItem[:total],
-            total_tax: lineItem[:total_tax],
-            taxes: lineItem[:taxes],
-            meta_data: lineItem[:meta_data],
-            sku: sku,
-            price: lineItem[:price]
-          ).save
-        end
-      end
-
-      if params[:shipping][:address_1] != ""
-        @wooOrder.woo_shipping_addresses.build(shippingAddressParams).save
-        puts "Primary Address Input"
-      else
-        @wooOrder.woo_shipping_addresses.build(billingAddressParams).save
-        puts "Secondary Address Input"
-      end
-
+     @wooOrder = WooOrderService.call(params, @wooOrder)
       ack = @wooOrder.woo_acknowledgements.build()
       ack.save
-
       ship_notice = @wooOrder.woo_shipnotices.build()
       ship_notice.save
       BarnhardtMessageWooService.call(@wooOrder)
@@ -64,25 +26,30 @@ class WooOrdersController < ApplicationController
 
   def update_order
     @filtered_params =  filtered_order_params(order_params)
-    @wooOrder = WooOrder.find_by(woo_id: @filtered_params[:woo_id])
-    if @wooOrder 
-      if @wooOrder.update(@filtered_params)
+    @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
+    if @wooOrder.new_record?
+      @wooOrder = WooOrderService.call(params, @wooOrder)
+      if @wooOrder.save
+        ack = @wooOrder.woo_acknowledgements.build()
+        ack.save
+        ship_notice = @wooOrder.woo_shipnotices.build()
+        ship_notice.save
         BarnhardtMessageWooService.call(@wooOrder)
-        respond_to do |format|
-          format.json { render json: @wooOrder.to_json, status: 201 }
-        end
+        respond_with_201
+        return
       else
-        respond_to do |format|
-          format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
-        end
+        respond_with_422
+        return
       end
     else
-      respond_to do |format|
-        format.json { render status: 500 }
+      if @wooOrder.update(@filtered_params)
+        BarnhardtMessageWooService.call(@wooOrder)
+        respond_with_201
+      else
+        respond_with_422
       end
     end
   end
-
 
   private
 
@@ -103,47 +70,42 @@ class WooOrdersController < ApplicationController
   #   end
   #   filteredParams
   # end
-
-  def billingAddressParams
-    params.require(:billing).permit(
-      :first_name,
-      :last_name,
-      :company,
-      :address_1,
-      :address_2,
-      :city,
-      :state,
-      :postcode,
-      :country
-    )
+  def filter_pending_status
+    if filtered_order_params(order_params)['status'] == 'pending'
+      respond_to do |format|
+        format.json { render json: @wooOrder.to_json, status: 422 }
+      end 
+      return true
+    else
+      return false
+    end
   end
 
-  def shippingAddressParams
-    params.require(:shipping).permit(
-      :first_name,
-      :last_name,
-      :company,
-      :address_1,
-      :address_2,
-      :city,
-      :state,
-      :postcode,
-      :country
-    )
+  def respond_with_201
+    respond_to do |format|
+      format.json { render json: @wooOrder.to_json, status: 201 }
+    end
   end
 
-  SIZES = {
-    "twin":             "TW",
-    "twin-xl":          "TX",
-    "full":             "FL",
-    "queen":            "QU",
-    "king":             "KG",
-    "california-king":  "CK"
-  }
-
-  def getSize(size)
-    SIZES[size.to_sym]
+  def respond_with_422
+    respond_to do |format|
+      format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
+    end
   end
+
+
+  # SIZES = {
+  #   "twin":             "TW",
+  #   "twin-xl":          "TX",
+  #   "full":             "FL",
+  #   "queen":            "QU",
+  #   "king":             "KG",
+  #   "california-king":  "CK"
+  # }
+
+  # def getSize(size)
+  #   SIZES[size.to_sym]
+  # end
 
 
   # def buildSku(meta_data)

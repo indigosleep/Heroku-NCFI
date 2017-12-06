@@ -12,7 +12,7 @@ class WooOrder < ApplicationRecord
   has_many :woo_acknowledgements
   has_many :woo_shipnotices
 
-
+  validates :woo_id, uniqueness: true
   after_create #:make_shipping_address, :transmit_to_barnhardt
 
   after_initialize do |order|
