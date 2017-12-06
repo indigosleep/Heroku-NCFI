@@ -1,7 +1,7 @@
 class UpdateWooOrderService
   
-  def initialize(woo_order)
-  	@woo_order = woo_order
+  def initialize(woo_id)
+  	@woo_id = woo_id
     @client = WooCommerce::API.new("https://www.indigosleep.com",
     	ENV['WOO_CONSUMER_KEY'], 
     	ENV['WOO_CONSUMER_SECRET'],
@@ -14,13 +14,14 @@ class UpdateWooOrderService
     )
   end
 
-  def self.call(woo_order)
-  	new(woo_order).call
+  def self.call(woo_id)
+  	new(woo_id).call
   end
 
   def call
-    data = (@woo_order.payment_method == "klarna_payments") ? { order: { status: 'processing' } } : { order: { status: 'completed' } } 
-  	response = @client.put("orders/#{@woo_order.woo_id}", data )
+    data = { order: { status: 'completed' } } 
+  	response = @client.put("orders/#{@woo_id}", data )
+    Rails.logger.info "************ response update woo order: #{response} *******************"
     return response
   end
 end
