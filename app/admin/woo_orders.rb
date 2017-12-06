@@ -3,10 +3,10 @@ ActiveAdmin.register WooOrder, as: "Orders" do
 
   index do
     selectable_column
+    column 'Order Number', :number
     column "woo_id" do |order|
       link_to order.woo_id, admin_order_path(order)
     end
-    column 'Number', :number
     column "Date", :date_created
     column "Discount", :discount_total, sortable: false
     column :total
