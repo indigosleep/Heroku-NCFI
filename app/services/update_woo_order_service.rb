@@ -7,8 +7,9 @@ class UpdateWooOrderService
     	ENV['WOO_CONSUMER_SECRET'],
     	{
           wp_json: true,
-          version: "wc/v2"
-          # ,query_string_auth: true #// Force Basic Authentication as query string true and using under HTTPS
+          version: "v2",
+          debug_mode: true,
+          query_string_auth: true
         }
     )
   end
