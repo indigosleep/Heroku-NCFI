@@ -9,6 +9,7 @@ ActiveAdmin.register WooOrder, as: "Orders" do
     column "PO" do |order|
       link_to order.id, admin_order_path(order)
     end
+    column 'NFCI Reply', :barnhardt_reply
     column "Date", :date_created
     column "Discount", :discount_total, sortable: false
     column :total

@@ -6,7 +6,7 @@ class WooOrdersController < ApplicationController
     @wooOrder = WooOrder.new(filtered_order_params(order_params))
     return if filter_pending_on_hold_status
     if @wooOrder.save
-     @wooOrder = WooOrderService.call(params, @wooOrder)
+     @wooOrder = WooOrderService.call(filtered_order_params(order_params), @wooOrder)
       create_acknowledgement_shipnotice
       BarnhardtMessageWooService.call(@wooOrder)
       
@@ -23,9 +23,10 @@ class WooOrdersController < ApplicationController
 
   def update_order
     @filtered_params =  filtered_order_params(order_params)
+
     @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
     if @wooOrder.new_record?
-      @wooOrder = WooOrderService.call(params, @wooOrder)
+      @wooOrder = WooOrderService.call(@filtered_params, @wooOrder)
       if @wooOrder.save
         create_acknowledgement_shipnotice
         BarnhardtMessageWooService.call(@wooOrder)
@@ -67,6 +68,12 @@ class WooOrdersController < ApplicationController
   def respond_with_422
     respond_to do |format|
       format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
+    end
+  end
+
+  def respond_with_200
+    respond_to do |format|
+      format.json { render Json: {status: 'ok' }.to_json, status: 200 }
     end
   end
 
