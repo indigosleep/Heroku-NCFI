@@ -3,8 +3,7 @@ ActiveAdmin.register WooOrder, as: "Orders" do
 
   index do
     selectable_column
-    column 'Order Number', :number
-    column "woo_id" do |order|
+    column "Order Number" do |order|
       link_to order.woo_id, admin_order_path(order)
     end
     column "PO" do |order|
@@ -20,7 +19,6 @@ ActiveAdmin.register WooOrder, as: "Orders" do
     #   link_to li.id, admin_line_item(li)
     # end
     column "Via", :created_via
-    column :phone, sortable: false
     column :email, sortable: false
     column ' Original NFCI Reply', :barnhardt_reply
     column "Shipping" do |order|
