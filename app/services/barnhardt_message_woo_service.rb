@@ -130,10 +130,8 @@ class BarnhardtMessageWooService
 
     puts "BarnhardtMessageResponse!!!!!!!!!!!!!!"
     p response
-
-
     #TODO properly parse to save Success or Failure
-    order.barnhardt_reply = response
+    order.barnhardt_reply = response.parsed_response
     order.save
     response
   end
