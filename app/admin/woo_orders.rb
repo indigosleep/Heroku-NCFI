@@ -7,6 +7,9 @@ ActiveAdmin.register WooOrder, as: "Orders" do
     column "woo_id" do |order|
       link_to order.woo_id, admin_order_path(order)
     end
+    column "PO" do |order|
+      link_to order.id, admin_order_path(order)
+    end
     column "Date", :date_created
     column "Discount", :discount_total, sortable: false
     column :total
