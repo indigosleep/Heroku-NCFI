@@ -1,23 +1,19 @@
 
 class WooOrdersController < ApplicationController
   before_action :parse_params
+  
 
+  WHITELISTED_STATUSES = ['processing', 'completed']
   def create
     @wooOrder = WooOrder.new(filtered_order_params(order_params))
-    return if filter_pending_on_hold_status
-    if @wooOrder.save
-     @wooOrder = WooOrderService.call(params, @wooOrder)
+    if WHITELISTED_STATUSES.include?(filtered_order_params(order_params)['status']) && @wooOrder.save
+      @wooOrder = WooOrderService.call(params, @wooOrder)
       create_acknowledgement_shipnotice
       BarnhardtMessageWooService.call(@wooOrder)
-      
-      respond_to do |format|
-        format.json { render json: @wooOrder.to_json, status: 201 }
-      end
+      respond_with_201
     else
       # TODO add ticket to zendesk
-      respond_to do |format|
-        format.json { render json: @wooOrder.errors.full_messages.to_json, status: 422 }
-      end
+      respond_with_422
     end
   end
 
@@ -48,17 +44,6 @@ class WooOrdersController < ApplicationController
   end
 
   private
-  # we don't want to create oder records with pending or on-hold statuses
-  def filter_pending_on_hold_status
-    if filtered_order_params(order_params)['status'] == 'pending' || filtered_order_params(order_params)['status'] == 'on-hold'
-      respond_to do |format|
-        format.json { render json: @wooOrder.to_json, status: 422 }
-      end 
-      return true
-    else
-      return false
-    end
-  end
 
   def respond_with_201
     respond_to do |format|
