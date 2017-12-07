@@ -95,7 +95,7 @@ class BarnhardtMessageWooService
         "address1": shipAddress.address_1,
         "address2": shipAddress.address_2 || "",
         "address3": "",
-        "city": shipAddress.city,
+        "city": shipAddress.city[0..19],
         "company": shipAddress.company || "",
         "country": shipAddress.country || "US",
         "email": order.email,
