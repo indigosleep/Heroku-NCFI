@@ -10,7 +10,6 @@ ActiveAdmin.register WooOrder, as: "Orders" do
       link_to order.id, admin_order_path(order)
     end
     column "Date", :date_created
-    column "Discount", :discount_total, sortable: false
     column :total
     column :status, sortable: false
     column "Method", :payment_method, sortable: false
@@ -20,13 +19,12 @@ ActiveAdmin.register WooOrder, as: "Orders" do
     # end
     column "Via", :created_via
     column :email, sortable: false
-    column ' Original NFCI Reply', :barnhardt_reply
     column "Shipping" do |order|
       if order.woo_shipnotices.present?
         order.woo_shipnotices.first.barnhardt_tracking
       end
     end
-
+    column ' Original NFCI Reply', :barnhardt_reply
   end
 
 
