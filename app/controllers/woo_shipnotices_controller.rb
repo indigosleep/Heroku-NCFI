@@ -12,6 +12,7 @@ class WooShipnoticesController < ApplicationController
       )
         order_response = UpdateWooOrderService.call(@woo_id)
         ship_response = UpdateWooShippingService.call(@woo_id, params[:tracking].first)
+        @shipNote.woo_order.update(status: 'completed')
         format.json { render json: @shipNote.to_json, status: 201 }
       else
         zt = ZenTicketService.new
