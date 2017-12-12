@@ -27,9 +27,14 @@ class UpdateWooShippingService
 
   def call
   	auth = { username: ENV['WOO_CONSUMER_KEY'], password: ENV['WOO_CONSUMER_SECRET'] }
+    if @params['tracking'].kind_of?(Array)
+      tracking_number = @params['tracking'].first
+    else
+      tracking_number = @params['tracking']
+    end
   	data = {
   		tracking_provider: @params['carrier'],
-  		tracking_number: @params['tracking'],
+  		tracking_number: tracking_number,
   		tracking_link: @params['url']
   	}.to_json
   	headers = { 'Content-Type' => 'application/json' }
