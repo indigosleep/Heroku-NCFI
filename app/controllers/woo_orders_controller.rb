@@ -6,11 +6,15 @@ class WooOrdersController < ApplicationController
   WHITELISTED_STATUSES = ['processing', 'completed']
   def create
     @wooOrder = WooOrder.new(filtered_order_params(order_params))
-    if WHITELISTED_STATUSES.include?(filtered_order_params(order_params)['status']) && @wooOrder.save
-      @wooOrder = WooOrderService.call(params, @wooOrder)
-      create_acknowledgement_shipnotice
-      BarnhardtMessageWooService.call(@wooOrder)
-      respond_with_201
+    if WHITELISTED_STATUSES.include?(filtered_order_params(order_params)['status']) 
+      if @wooOrder.save
+        @wooOrder = WooOrderService.call(params, @wooOrder)
+        create_acknowledgement_shipnotice
+        BarnhardtMessageWooService.call(@wooOrder)
+        respond_with_201
+      else
+        respond_with_422
+      end
     else
       # TODO add ticket to zendesk
       respond_with_422
@@ -19,27 +23,30 @@ class WooOrdersController < ApplicationController
 
   def update_order
     @filtered_params =  filtered_order_params(order_params)
-
-    @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
-    if @wooOrder.new_record?
-      @wooOrder = WooOrderService.call(params, @wooOrder)
-      if @wooOrder.save
-         @wooOrder.update(@filtered_params)
-        create_acknowledgement_shipnotice
-        BarnhardtMessageWooService.call(@wooOrder)
-        respond_with_201
-        return
+    if WHITELISTED_STATUSES.include?(@filtered_params['status'])
+      @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
+      if @wooOrder.new_record?
+        @wooOrder = WooOrderService.call(params, @wooOrder)
+        if @wooOrder.save
+           @wooOrder.update(@filtered_params)
+          create_acknowledgement_shipnotice
+          BarnhardtMessageWooService.call(@wooOrder)
+          respond_with_201
+          return
+        else
+          respond_with_422
+          return
+        end
       else
-        respond_with_422
-        return
+        if @wooOrder.update(@filtered_params)
+          BarnhardtMessageWooService.call(@wooOrder)
+          respond_with_201
+        else
+          respond_with_422
+        end
       end
     else
-      if @wooOrder.update(@filtered_params)
-        BarnhardtMessageWooService.call(@wooOrder)
-        respond_with_201
-      else
-        respond_with_422
-      end
+      respond_with_422
     end
   end
 
