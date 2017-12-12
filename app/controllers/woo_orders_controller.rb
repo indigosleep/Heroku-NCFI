@@ -13,24 +13,24 @@ class WooOrdersController < ApplicationController
         BarnhardtMessageWooService.call(@wooOrder)
         respond_with_201
       else
+        # TODO add ticket to zendesk
         respond_with_422
       end
     else
-      # TODO add ticket to zendesk
       respond_with_422
     end
   end
 
   def update_order
     @filtered_params =  filtered_order_params(order_params)
+    @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
     if WHITELISTED_STATUSES.include?(@filtered_params['status'])
-      @wooOrder = WooOrder.find_or_initialize_by(woo_id: @filtered_params[:woo_id])
       if @wooOrder.new_record?
         @wooOrder = WooOrderService.call(params, @wooOrder)
         if @wooOrder.save
            @wooOrder.update(@filtered_params)
           create_acknowledgement_shipnotice
-          BarnhardtMessageWooService.call(@wooOrder)
+          # BarnhardtMessageWooService.call(@wooOrder)
           respond_with_201
           return
         else
@@ -75,6 +75,10 @@ class WooOrdersController < ApplicationController
     ack.save
     ship_notice = @wooOrder.woo_shipnotices.build()
     ship_notice.save
+  end
+  
+  def filter_statuses
+
   end
 
   def parse_params
