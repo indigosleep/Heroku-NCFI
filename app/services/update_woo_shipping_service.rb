@@ -20,7 +20,7 @@ class UpdateWooShippingService
   def get_list
     auth = { username: ENV['WOO_CONSUMER_KEY'], password: ENV['WOO_CONSUMER_SECRET'] }
     headers = { 'Content-Type' => 'application/json' }
-    response = self.class.get("/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, body: data, headers: headers)
+    response = self.class.get("/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, headers: headers)
     return response
   end
 
