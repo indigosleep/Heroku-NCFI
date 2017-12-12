@@ -30,7 +30,7 @@ class WooOrdersController < ApplicationController
         if @wooOrder.save
            @wooOrder.update(@filtered_params)
           create_acknowledgement_shipnotice
-          # BarnhardtMessageWooService.call(@wooOrder)
+          BarnhardtMessageWooService.call(@wooOrder)
           respond_with_201
           return
         else
@@ -75,10 +75,6 @@ class WooOrdersController < ApplicationController
     ack.save
     ship_notice = @wooOrder.woo_shipnotices.build()
     ship_notice.save
-  end
-  
-  def filter_statuses
-
   end
 
   def parse_params
