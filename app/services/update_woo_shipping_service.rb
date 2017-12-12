@@ -11,11 +11,17 @@ class UpdateWooShippingService
   end
 
   def retrieve_tracking(tracking_id)
-    true
-    # auth = { username: ENV['WOO_CONSUMER_KEY'], password: ENV['WOO_CONSUMER_SECRET'] }
-    # headers = { 'Content-Type' => 'application/json' }
-    # response = self.class.get("/orders/#{@woo_id}/shipment-trackings/#{tracking_id}", basic_auth: auth, headers: headers)
-    # Rails.logger.info "************* shipping response from woo: #{response} *************************"
+    auth = { username: ENV['WOO_CONSUMER_KEY'], password: ENV['WOO_CONSUMER_SECRET'] }
+    headers = { 'Content-Type' => 'application/json' }
+    response = self.class.get("/orders/#{@woo_id}/shipment-trackings/#{tracking_id}", basic_auth: auth, headers: headers)
+    Rails.logger.info "************* shipping response from woo: #{response} *************************"
+  end
+
+  def get_list
+    auth = { username: ENV['WOO_CONSUMER_KEY'], password: ENV['WOO_CONSUMER_SECRET'] }
+    headers = { 'Content-Type' => 'application/json' }
+    response = self.class.get("/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, body: data, headers: headers)
+    return response
   end
 
   def call
