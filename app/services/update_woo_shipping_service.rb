@@ -15,6 +15,7 @@ class UpdateWooShippingService
     headers = { 'Content-Type' => 'application/json' }
     response = self.class.get("/orders/#{@woo_id}/shipment-trackings/#{tracking_id}", basic_auth: auth, headers: headers)
     Rails.logger.info "************* shipping response from woo: #{response} *************************"
+    return response
   end
 
   def get_list
