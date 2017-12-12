@@ -19,10 +19,9 @@ class UpdateWooOrderService
   end
 
   def call
-    true
-   #  data = { order: { status: 'completed' } } 
-  	# response = @client.put("orders/#{@woo_id}", data )
-   #  Rails.logger.info "************ response update woo order: #{response} *******************"
-   #  return response
+    data = { order: { status: 'completed' } } 
+  	response = @client.put("orders/#{@woo_id}", data )
+    Rails.logger.info "************ response update woo order: #{response} *******************"
+    return response
   end
 end
