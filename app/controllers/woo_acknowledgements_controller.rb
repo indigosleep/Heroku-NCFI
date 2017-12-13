@@ -13,7 +13,7 @@ class WooAcknowledgementsController < ApplicationController
         barnhardt_status: params[:status]
       )
 
-        if params[:errors].length > 0
+        if params[:errors] && params[:errors].length > 0
           zt = ZenTicketService.new
           zt.sendBarnhardtError(params)
         end
