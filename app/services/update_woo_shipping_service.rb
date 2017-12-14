@@ -31,7 +31,11 @@ class UpdateWooShippingService
       tracking_number = @params['tracking']
     end
     tracking_numbers = []
-    get_list.parsed_response.map { |order| tracking_numbers << order['tracking_number'] }
+    list = get_list.parsed_response
+    puts list
+    puts list.to_a
+    return
+    # get_list.parsed_response.map { |order| tracking_numbers << order['tracking_number'] }
 
     if tracking_numbers.include?(tracking_number)
       return true 
