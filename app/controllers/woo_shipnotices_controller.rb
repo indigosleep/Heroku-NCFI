@@ -5,6 +5,8 @@ class WooShipnoticesController < ApplicationController
   def update
     @shipNote = WooShipnotice.find_by_id(params[:id].to_i)
     @woo_id = @shipNote.woo_order.woo_id
+    Rails.logger.info "************ params from NFCI: #{params}******"
+    Rails.logger.info "********** tracking class: #{params[:tracking] ? params[:tracking].first.class : 'no params'} ********"
     respond_to do |format|
       if params[:tracking]  && @shipNote.update(
         purchase_order_line: params[:purchase_order_line],
