@@ -32,6 +32,9 @@ class UpdateWooShippingService
     else
       tracking_number = @params['tracking']
     end
+    tracking_numbers = []
+    get_list.parsed_response.map { |order| tracking_numbers << order['tracking_number'] }
+    return true unless tracking_numbers.include?(tracking_number)
   	data = {
   		tracking_provider: @params['carrier'],
   		tracking_number: tracking_number,
