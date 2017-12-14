@@ -3,7 +3,9 @@ class BarnhardtMessageWooService
 
   TESTMODE = Rails.env.development? || Rails.env.test?
   if TESTMODE
+    puts "***********************test mode*******************"
     HOME_URL = 'https://calebbourg.pagekite.me/api/v1'
+    # HOME_URL = 'https://requestb.in'
   else
     HOME_URL =  "https://indigosleep.herokuapp.com/api/v1"
   end
@@ -107,6 +109,7 @@ class BarnhardtMessageWooService
       "notification_urls": {
         "order_acknowledgement": "#{HOME_URL}/woo_acknowledgements/#{ackNum}.json",
         "ship_notice": "#{HOME_URL}/woo_shipnotices/#{sNoteNum}.json"
+        # "ship_notice": "#{HOME_URL}/1d8kawt1"
 
       }
     }
