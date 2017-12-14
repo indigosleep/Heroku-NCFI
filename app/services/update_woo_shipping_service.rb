@@ -1,5 +1,4 @@
 class UpdateWooShippingService
-  include HTTParty
   def initialize(woo_id, params)
     @params = params
     @woo_id = woo_id
