@@ -19,7 +19,7 @@ class UpdateWooShippingService
   def get_list
     auth = { username: ENV['WOO_CONSUMER_KEY'], password: ENV['WOO_CONSUMER_SECRET'] }
     headers = { 'Content-Type' => 'application/json' }
-    response = HTTParty.get("https://www.indigosleep.com/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, headers: headers)
+    response = HTTParty.get("https://www.indigosleep.com/wp-json/wc/v1/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, headers: headers)
     return response
   end
 
@@ -33,9 +33,7 @@ class UpdateWooShippingService
     tracking_numbers = []
     list = get_list.parsed_response
     puts list
-    puts list.to_a
-    return
-    # get_list.parsed_response.map { |order| tracking_numbers << order['tracking_number'] }
+    list.map { |order| tracking_numbers << order['tracking_number'] }
 
     if tracking_numbers.include?(tracking_number)
       return true 
