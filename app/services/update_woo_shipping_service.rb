@@ -39,7 +39,7 @@ class UpdateWooShippingService
       return true 
     else
     	data = {
-    		tracking_provider: @params['carrier'],
+    		tracking_provider: "Fedex",
     		tracking_number: tracking_number,
     		tracking_link: @params['url'],
         date_shipped: Date.today
