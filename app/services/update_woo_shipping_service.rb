@@ -34,16 +34,19 @@ class UpdateWooShippingService
     end
     tracking_numbers = []
     get_list.parsed_response.map { |order| tracking_numbers << order['tracking_number'] }
-    return true unless tracking_numbers.include?(tracking_number)
-  	data = {
-  		tracking_provider: @params['carrier'],
-  		tracking_number: tracking_number,
-  		tracking_link: @params['url']
-  	}.to_json
-  	headers = { 'Content-Type' => 'application/json' }
-    response = self.class.post("/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, body: data, headers: headers)
-    Rails.logger.info "************* shipping response from woo: #{response} *************************"
-    return response
+    if tracking_numbers.include?(tracking_number)
+      return true 
+    else
+    	data = {
+    		tracking_provider: @params['carrier'],
+    		tracking_number: tracking_number,
+    		tracking_link: @params['url']
+    	}.to_json
+    	headers = { 'Content-Type' => 'application/json' }
+      response = self.class.post("/orders/#{@woo_id}/shipment-trackings", basic_auth: auth, body: data, headers: headers)
+      Rails.logger.info "************* shipping response from woo: #{response} *************************"
+      return response
+    end
   end
 
   
