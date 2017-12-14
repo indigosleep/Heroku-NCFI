@@ -1,6 +1,6 @@
 class UpdateWooShippingService
   def initialize(woo_id, params)
-    @params = params
+    @params = ActiveSupport::HashWithIndifferentAccess.new(params)
     @woo_id = woo_id
   end
 
